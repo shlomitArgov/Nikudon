@@ -1,0 +1,57 @@
+.home {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.home-content {
+  text-align: center;
+  max-width: 700px;
+  width: 100%;
+}
+
+.home-title {
+  font-size: 64px;
+  font-weight: 700;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom: var(--spacing-xl);
+}
+
+/* Play button */
+.home-start-button {
+  width: 120px;
+  height: 120px;
+  min-width: 120px;
+  min-height: 120px;
+  padding: 0;
+  background-color: white;
+  color: var(--color-primary);
+  border-radius: 50%;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-start-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.home-start-button:active {
+  transform: scale(0.95);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.play-icon {
+  width: 48px;
+  height: 48px;
+  margin-left: 4px; /* Slight offset to center the triangle visually */
+}

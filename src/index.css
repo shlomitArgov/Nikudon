@@ -1,0 +1,110 @@
+/* Reset and base styles for RTL tablet-friendly PWA */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Tablet-friendly touch targets: min 48dp */
+  --touch-target-min: 48px;
+  --spacing-unit: 16px;
+  
+  /* Colors */
+  --color-primary: #4A90E2;
+  --color-primary-dark: #357ABD;
+  --color-success: #52C41A;
+  --color-error: #FF4D4F;
+  --color-background: #FFFFFF;
+  --color-text: #333333;
+  --color-text-light: #666666;
+  
+  /* Typography */
+  --font-family-hebrew: 'Assistant', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-size-large: 24px;
+  --font-size-medium: 18px;
+  --font-size-small: 16px;
+  
+  /* Spacing */
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 32px;
+  --spacing-xl: 48px;
+}
+
+html {
+  /* Disable text selection for better touch UX */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  
+  /* Smooth scrolling */
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family-hebrew);
+  font-size: var(--font-size-medium);
+  color: var(--color-text);
+  background-color: var(--color-background);
+  direction: rtl;
+  text-align: right;
+  /* Prevent zoom on double-tap */
+  touch-action: manipulation;
+  /* Optimize for tablet */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* RTL-safe utilities */
+.rtl {
+  direction: rtl;
+}
+
+.ltr {
+  direction: ltr;
+}
+
+/* Tablet-friendly button base */
+button {
+  font-family: var(--font-family-hebrew);
+  font-size: var(--font-size-medium);
+  min-height: var(--touch-target-min);
+  min-width: var(--touch-target-min);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  touch-action: manipulation;
+  /* Disable tap highlight */
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.1s ease, opacity 0.2s ease;
+}
+
+button:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Ensure no hover-dependent UI */
+@media (hover: hover) {
+  button:hover {
+    opacity: 0.9;
+  }
+}
