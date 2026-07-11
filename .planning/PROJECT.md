@@ -33,12 +33,13 @@ A child who can't read should be able to play unassisted, guided purely by sound
 - Progress persistence across app restarts — in-memory state is sufficient to validate level 1; persistence comes later
 - Full curriculum beyond level 1 (o/u sounds, multi-letter progression across all 22 letters) — prove the level-1 vertical slice first
 - Kamatz Katan as a taught niqqud — permanently excluded, not just deferred (same glyph as Kamatz Gadol but pronounced differently depending on grammatical context, which pre-readers can't judge)
-- Reading/spelling instruction — this is explicitly a pre-reading phonics primer, not a reading app
+- Reading/spelling instruction — out of scope for this milestone (not permanently excluded); see Context below on the longer-term arc
 
 ## Context
 
 - The existing codebase already has a working vertical slice of the `hearAndTap` gameplay loop (Home → StagePlayer → generate trial → tap → feedback), but audio, stage progression, and navigation are stubbed or incomplete. See `.planning/codebase/CONCERNS.md` for the full list.
 - Audience: children ages 3-6 who know the Hebrew alphabet and can identify opening sounds of words but cannot yet read or sound out niqqud.
+- Long-term arc: niqqud sound-mastery (this milestone) is intended as a stepping stone toward a future milestone where children read short words — not a standalone end state. Level 1 scope stays narrow (one letter, two sounds) to validate the core loop first, but architecture/content decisions should avoid closing off that reading path later.
 - Design must be entirely icon/audio driven — no reliance on reading UI text or instructions, only common signage (play, forward/back, green check, red X).
 - Modern Israeli Hebrew niqqud pronunciation has fewer distinct sounds than written signs: patach/kamatz, segol/tzere, and kubutz/shuruk are pronunciation-identical pairs (confirmed via web research against Wikipedia's Niqqud and Hebrew diacritics articles). The app must group niqqud by sound, not by grapheme, when generating trial answer options — this matches the existing `nikudGroups.ts` design.
 - `src/content/letters.ts` (the 22 consonants) exists but is currently unused by the engine or UI — level 1 requires wiring it into letter selection and syllable/content generation.
