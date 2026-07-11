@@ -2,7 +2,7 @@
 
 ## What This Is
 
-Nikudon (ניקודון) is a tablet-based, icon-only Hebrew niqqud (vowel-sign) learning game for pre-literate children ages 3-6. Kids already recognize the Hebrew alphabet and can identify the opening sounds of words, but can't yet read or sound out niqqud. In the game, a child picks a letter, hears a recorded syllable, and taps the matching niqqud symbol — no reading required, only universal icons (play, checkmark, X, back/return).
+Nikudon — Hebrew name: ניקודון — is a tablet-based, icon-only Hebrew niqqud (vowel-sign) learning game for pre-literate children ages 3-6. Kids already recognize the Hebrew alphabet and can identify the opening sounds of words, but can't yet read or sound out niqqud. In the game, a child picks a letter, hears a recorded syllable, and taps the matching niqqud symbol — no reading required, only universal icons (play, checkmark, X, back/return).
 
 ## Core Value
 
@@ -50,6 +50,7 @@ A child who can't read should be able to play unassisted, guided purely by sound
 - **Platform**: Tablet-first, installable PWA, RTL Hebrew layout (already established in `index.html`/`vite.config.ts`)
 - **Audio**: Must use real recorded native-speaker audio clips (not TTS) for pronunciation accuracy
 - **Content correctness**: Niqqud sound-equivalence must be respected — never present two same-sound niqqud as competing distractor options in the same trial; Kamatz Katan excluded entirely from content
+- **Bidi text handling**: Mixing Hebrew (RTL) and English (LTR) text — in docs, code comments, or UI — is prone to bidi-algorithm rendering bugs (e.g. reordering around punctuation/parentheses). Avoid inline Hebrew-in-parentheses within English sentences; prefer Hebrew on its own line/element, or wrap with explicit Unicode directional isolates (U+2067 RLI … U+2069 PDI) when inline mixing is unavoidable
 
 ## Key Decisions
 
