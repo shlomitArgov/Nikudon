@@ -29,7 +29,9 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Tapping the play button repeatedly in quick succession replays the clip each time with no audible lag or missed taps
   3. Audio plays reliably on a real iPad (Safari) and a real Android tablet, including inside the installed/standalone PWA, starting from the very first tap of a session
   4. Sound-equivalent graphemes (e.g. patach and kamatz) share a single recorded clip per letter — no duplicate or missing clips per grapheme
-**Plans**: TBD
+**Plans**: 2 plans
+  - [ ] 01-01-PLAN.md — Tap-to-hear vertical slice (Walking Skeleton): Vite client types, placeholder clips, wav precache glob, audioAssets manifest, useAudioPlayer hook, wired into StagePlayer (removes alert stub)
+  - [ ] 01-02-PLAN.md — Real-device acceptance gate: production build + precache check, then blocking human-verify on real iPad Safari + Android tablet, in-tab and installed PWA
 **Notes**: Audio asset file placement (`public/audio/` with plain string paths vs. `src/content/audio/` + `import.meta.glob({ eager: true })`) is an unresolved conflict between `research/STACK.md` and `research/ARCHITECTURE.md` — this must be explicitly decided and documented as part of this phase's plan, not silently defaulted by whichever agent plans it. Also: iOS Safari requires the shared `AudioContext` to be unlocked synchronously inside a user-gesture handler (no `await` before first `resume()`/play); this phase's acceptance gate must include verification on a real iPad and Android tablet, not just desktop Chrome (see `research/PITFALLS.md`).
 
 ### Phase 2: Level-1 Curriculum & Trial-Generation Correctness
@@ -77,7 +79,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Real Audio Playback Layer | 0/TBD | Not started | - |
+| 1. Real Audio Playback Layer | 0/2 | Not started | - |
 | 2. Level-1 Curriculum & Trial-Generation Correctness | 0/TBD | Not started | - |
 | 3. Letter-Picker Screen | 0/TBD | Not started | - |
 | 4. Icon Navigation, Feedback Tone & Visual Polish | 0/TBD | Not started | - |
