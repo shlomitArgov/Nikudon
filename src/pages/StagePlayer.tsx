@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { getStage, getFirstStage } from '../content/stages'
-import { getNikudGroup } from '../content/nikudGroups'
+import { getNikudGroup, type NikudGroupId } from '../content/nikudGroups'
 import {
   generateTrial,
   recordTrialResult,
@@ -10,11 +10,13 @@ import {
   type Trial,
   type StageProgress,
 } from '../engine/stageRunner'
+import { useAudioPlayer } from '../hooks/useAudioPlayer'
 import './StagePlayer.css'
 
 function StagePlayer() {
   const { stageId } = useParams<{ stageId?: string }>()
-  const [stage, setStage] = useState(getStage(stageId || '') || getFirstStage())
+  const { play } = useAudioPlayer()
+  const [stage] = useState(getStage(stageId || '') || getFirstStage())
   const [progress, setProgress] = useState<StageProgress>(() =>
     createStageProgress(stage.id)
   )
@@ -23,16 +25,19 @@ function StagePlayer() {
   const [showFeedback, setShowFeedback] = useState(false)
   const [usedSyllables, setUsedSyllables] = useState<Set<string>>(new Set())
 
-  // Generate first trial when stage loads
+  // Generate first trial when stage loads. Intentionally depends on stage.id
+  // only (not stage/usedSyllables) — this must run once per stage change,
+  // not re-run every time usedSyllables is updated inside the effect itself.
   useEffect(() => {
     if (stage) {
       const trial = generateTrial(stage, usedSyllables)
       setCurrentTrial(trial)
       setUsedSyllables((prev) => new Set(prev).add(trial.audioSyllable))
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stage.id])
 
-  const handleOptionSelect = (groupId: string) => {
+  const handleOptionSelect = (groupId: NikudGroupId) => {
     if (!currentTrial || selectedOption) return
 
     setSelectedOption(groupId)
@@ -40,7 +45,7 @@ function StagePlayer() {
 
     const result = {
       trialId: currentTrial.id,
-      selectedGroupId: groupId as any,
+      selectedGroupId: groupId,
       correctGroupId: currentTrial.correctGroupId,
       isCorrect,
       timestamp: Date.now(),
@@ -72,7 +77,6 @@ function StagePlayer() {
     return <div className="stage-player">טוען...</div>
   }
 
-  const correctGroup = getNikudGroup(currentTrial.correctGroupId)
   const isCorrect = selectedOption === currentTrial.correctGroupId
 
   return (
@@ -93,7 +97,7 @@ function StagePlayer() {
 
       <div className="trial-content">
         <div className="audio-display">
-          <button className="play-audio-button" onClick={() => alert('Audio will play here')} aria-label="Play audio">
+          <button className="play-audio-button" onClick={() => play(currentTrial.correctGroupId)} aria-label="Play audio">
             🔊
           </button>
         </div>
