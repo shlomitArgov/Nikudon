@@ -9,9 +9,9 @@ Requirements for the level-1 vertical slice. Each maps to roadmap phases.
 
 ### Audio
 
-- [x] **AUDIO-01**: Child can tap a play button to hear a recorded native-speaker syllable clip for the current letter+sound
+- [ ] **AUDIO-01**: Child can tap a play button to hear a recorded native-speaker syllable clip for the current letter+sound
 - [x] **AUDIO-02**: Child can replay the current sound by tapping again, with no lag on repeated taps
-- [x] **AUDIO-03**: Audio plays reliably on iOS Safari and Android tablets (tap-triggered playback works inside the installed PWA)
+- [ ] **AUDIO-03**: Audio plays reliably on iOS Safari and Android tablets (tap-triggered playback works inside the installed PWA)
 - [x] **AUDIO-04**: One recorded clip exists per letter+sound-group, shared across sound-equivalent graphemes (e.g. one "ah" clip serves both patach and kamatz spellings)
 
 ### Curriculum
@@ -74,9 +74,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUDIO-01 | Phase 1 | Complete |
+| AUDIO-01 | Phase 1 | Pending real-device sign-off (01-02) |
 | AUDIO-02 | Phase 1 | Complete |
-| AUDIO-03 | Phase 1 | Complete |
+| AUDIO-03 | Phase 1 | Pending real-device sign-off (01-02) |
 | AUDIO-04 | Phase 1 | Complete |
 | CONT-01 | Phase 3 | Pending |
 | CONT-02 | Phase 2 | Pending |
