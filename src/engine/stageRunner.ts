@@ -55,9 +55,6 @@ export function generateTrial(
   stage: Stage,
   usedSyllables: Set<string> = new Set()
 ): Trial {
-  // Get all groups that should appear in this stage (introduced + review)
-  const allGroups = [stage.introducedGroupId, ...stage.reviewGroupIds]
-  
   // Randomly select the correct answer (weighted toward the introduced group)
   // 60% chance for introduced group, 40% split among review groups
   const random = Math.random()
