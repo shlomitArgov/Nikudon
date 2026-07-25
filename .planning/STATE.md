@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 1
-current_phase_name: Real Audio Playback Layer
+current_phase: 01
+current_phase_name: real-audio-playback-layer
 status: executing
 stopped_at: Phase 1 context gathered (vibe mode)
-last_updated: "2026-07-25T07:22:44.761Z"
-last_activity: 2026-07-11
-last_activity_desc: ROADMAP.md and REQUIREMENTS.md traceability created
+last_updated: "2026-07-25T11:39:22.173Z"
+last_activity: 2026-07-25
+last_activity_desc: Phase 01 execution started
 progress:
   total_phases: 4
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 2
+  completed_plans: 1
   percent: 0
 ---
 
@@ -24,14 +24,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-11)
 
 **Core value:** A child who can't read should be able to play unassisted, guided purely by sound and universal icons, and correctly learn to associate niqqud symbols with their modern Hebrew sounds.
-**Current focus:** Phase 1 — Real Audio Playback Layer
+**Current focus:** Phase 01 — real-audio-playback-layer
 
 ## Current Position
 
-Phase: 1 of 4 (Real Audio Playback Layer)
-Plan: 0 of TBD in current phase
+Phase: 01 (real-audio-playback-layer) — EXECUTING
+Plan: 2 of 2
 Status: Ready to execute
-Last activity: 2026-07-11 — ROADMAP.md and REQUIREMENTS.md traceability created
+Last activity: 2026-07-25 — Phase 01 execution started
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -55,6 +55,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: -
 
 *Updated after each plan completion*
+| Phase 01 P01 | 6min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -66,6 +67,8 @@ Recent decisions affecting current work:
 - Roadmap: Group niqqud by modern pronunciation (not grapheme) as the selectable game unit — confirmed, drives Phase 2's distractor-scoping fix
 - Roadmap: Kamatz Katan permanently excluded from all content — drives Phase 2 acceptance criteria
 - Roadmap: `matchTheMark` and progress persistence deferred to v2 — kept out of all four phases
+- [Phase 01]: Audio keyed by NikudGroupId only (not letterId) for Phase 1 — Phase 3 will extend to a composite key once per-letter recordings exist
+- [Phase 01]: Placeholder clips generated via macOS say -v Carmit as WAV/PCM, committed under src/content/audio/placeholder/ for trivial later swap to real recordings
 
 ### Pending Todos
 
@@ -86,6 +89,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-25T06:38:07.404Z
+Last session: 2026-07-25T11:38:40.857Z
 Stopped at: Phase 1 context gathered (vibe mode)
 Resume file: .planning/phases/01-real-audio-playback-layer/01-CONTEXT.md
