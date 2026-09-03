@@ -31,7 +31,7 @@ See: .planning/PROJECT.md (updated 2026-07-11)
 Phase: 01 (real-audio-playback-layer) — EXECUTING
 Plan: 2 of 2
 Status: Ready to execute
-Last activity: 2026-07-25 — Phase 01 execution started
+Last activity: 2026-09-03 — Completed quick task 260903-b80 (StagePlayer drill UX iteration from playtest feedback)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -78,6 +78,12 @@ None yet.
 
 - **Phase 1 open decision**: Audio asset file placement (`public/audio/` vs. `src/content/audio/` + `import.meta.glob`) is an unresolved conflict between `research/STACK.md` and `research/ARCHITECTURE.md`. Must be explicitly resolved and documented during Phase 1 planning — see ROADMAP.md Phase 1 Notes.
 - **Phase 1 acceptance gate**: Real-device testing (iPad Safari + Android tablet) has no established test protocol yet — needs to be defined during Phase 1 planning per `research/PITFALLS.md`.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260903-b80 | StagePlayer drill UX iteration (playtest feedback): audio carrier fix, auto-play, auto-advance, red-X-only feedback, navigable trial history, 2-3 option cap, numeric stage badge | 2026-09-03 | b748efe | [260903-b80-stageplayer-drill-ux-iteration-audio-vis](./quick/260903-b80-stageplayer-drill-ux-iteration-audio-vis/) |
 
 ## Deferred Items
 
