@@ -197,7 +197,7 @@ function StagePlayer() {
             onClick={handleForward}
             aria-label="Next"
           >
-            ›
+            ‹
           </button>
           <button
             className="nav-button nav-back"
@@ -205,7 +205,7 @@ function StagePlayer() {
             disabled={currentIndex === 0}
             aria-label="Previous"
           >
-            ‹
+            ›
           </button>
         </div>
       </div>
