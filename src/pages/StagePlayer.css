@@ -197,7 +197,7 @@
   margin-top: var(--spacing-xl);
   display: flex;
   justify-content: center;
-  gap: var(--spacing-lg);
+  gap: calc(var(--spacing-xl) * 2);
 }
 
 .nav-button {
