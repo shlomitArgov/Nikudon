@@ -189,7 +189,16 @@ function StagePlayer() {
           </div>
         </div>
 
+        {/* RTL: the first flex child renders on the RIGHT, so forward/next
+            comes first (right side) and back/previous second (left side). */}
         <div className="nav-container">
+          <button
+            className="nav-button nav-forward"
+            onClick={handleForward}
+            aria-label="Next"
+          >
+            ›
+          </button>
           <button
             className="nav-button nav-back"
             onClick={handleBack}
@@ -197,13 +206,6 @@ function StagePlayer() {
             aria-label="Previous"
           >
             ‹
-          </button>
-          <button
-            className="nav-button nav-forward"
-            onClick={handleForward}
-            aria-label="Next"
-          >
-            ›
           </button>
         </div>
       </div>
