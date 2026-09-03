@@ -88,7 +88,7 @@ export function generateTrial(
   // If stage doesn't have enough review groups, use all available groups as potential distractors
   const allAvailableGroups = getAllNikudGroupIds()
   const incorrectGroups = allAvailableGroups.filter((id) => id !== correctGroupId)
-  const numOptions = Math.random() < 0.5 ? 3 : 4 // Always show 3-4 options
+  const numOptions = Math.random() < 0.5 ? 2 : 3 // Always show 2-3 options
   const numIncorrect = numOptions - 1
 
   // Select incorrect options randomly from all available groups

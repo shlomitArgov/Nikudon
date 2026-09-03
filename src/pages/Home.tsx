@@ -1,11 +1,13 @@
 import { useNavigate } from 'react-router-dom'
 import { getFirstStage } from '../content/stages'
+import { unlockAudio } from '../hooks/useAudioPlayer'
 import './Home.css'
 
 function Home() {
   const navigate = useNavigate()
 
   const handleStart = () => {
+    unlockAudio()
     const firstStage = getFirstStage()
     navigate(`/stage/${firstStage.id}`)
   }

@@ -27,6 +27,25 @@ function getAudioContext(): AudioContext {
   return sharedContext
 }
 
+/**
+ * Synchronously creates (if needed) and resumes the shared AudioContext.
+ * Must be called directly inside a user gesture handler (e.g. a tap's
+ * onClick), with no `await` before it, so the browser's autoplay-unlock
+ * requirement (notably iOS Safari) is satisfied. Because getAudioContext()
+ * lazily constructs the singleton on first call, calling this before the
+ * useAudioPlayer hook has mounted both creates and unlocks the context.
+ *
+ * Fail-soft by design (console.warn, never throw) per D-03.
+ */
+export function unlockAudio(): void {
+  try {
+    const ctx = getAudioContext()
+    void ctx.resume()
+  } catch (err) {
+    console.warn('[useAudioPlayer] failed to unlock AudioContext', err)
+  }
+}
+
 export function useAudioPlayer() {
   const bufferCache = useRef(new Map<NikudGroupId, AudioBuffer>())
   const currentSource = useRef<AudioBufferSourceNode | null>(null)
