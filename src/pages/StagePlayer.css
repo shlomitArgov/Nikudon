@@ -29,6 +29,15 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Locks the screen during the auto-advance transition: a translucent gray
+   veil that dims the content and blocks all taps underneath. */
+.lock-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: rgba(70, 70, 85, 0.55);
+}
+
 .stage-header {
   text-align: center;
   margin-bottom: var(--spacing-xl);

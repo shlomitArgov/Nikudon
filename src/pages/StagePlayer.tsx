@@ -6,11 +6,14 @@ import { generateTrial, type Trial } from '../engine/stageRunner'
 import { useAudioPlayer } from '../hooks/useAudioPlayer'
 import './StagePlayer.css'
 
-// After a correct tap, hold the green feedback visible this long before
-// starting the fade-out transition to the next trial.
-const AUTO_ADVANCE_DELAY_MS = 3000
+// After a correct tap, hold the (locked, grayed) feedback visible this long
+// before starting the fade-out transition to the next trial.
+const AUTO_ADVANCE_DELAY_MS = 2000
 // Duration of the slow crossfade out (and back in) between trials.
 const FADE_DURATION_MS = 800
+// After a new trial loads, wait this long — letting the whole page render /
+// fade in — before auto-playing its sound and releasing the screen lock.
+const AUTO_PLAY_DELAY_MS = 700
 
 interface TrialAnswer {
   selectedGroupId: NikudGroupId
@@ -27,6 +30,9 @@ function StagePlayer() {
   const [usedSyllables, setUsedSyllables] = useState<Set<string>>(new Set())
   // True while the current trial is fading out just before an auto-advance.
   const [isFadingOut, setIsFadingOut] = useState(false)
+  // True from a correct tap until the next trial has settled — locks and grays
+  // the screen (blocks taps) for the duration of the auto-advance transition.
+  const [isLocked, setIsLocked] = useState(false)
 
   const advanceTimer = useRef<number | null>(null)
   const fadeTimer = useRef<number | null>(null)
@@ -48,19 +54,24 @@ function StagePlayer() {
 
   const currentTrial: Trial | null = trials[currentIndex] ?? null
 
-  // Auto-play (C2): fire once per trial id, once the audio buffers are ready.
-  // Fires for the first trial once isReady flips true (AudioContext already
-  // unlocked by Home's start tap), and again on every navigated-to new trial.
+  // After a new trial loads, let the whole page render / fade in first, THEN
+  // play its sound — and, if we were mid auto-advance, release the screen lock.
+  // Both wait AUTO_PLAY_DELAY_MS. Plays once per trial id (guarded by the ref),
+  // so it fires for the first trial once isReady flips true (AudioContext
+  // unlocked by Home's start tap) and again on every navigated-to new trial.
   useEffect(() => {
-    if (
-      isReady &&
-      currentTrial &&
-      lastAutoPlayedTrialId.current !== currentTrial.id
-    ) {
-      play(currentTrial.correctGroupId)
-      lastAutoPlayedTrialId.current = currentTrial.id
-    }
-  }, [isReady, currentTrial, play])
+    if (!currentTrial) return
+    const trialId = currentTrial.id
+    const groupId = currentTrial.correctGroupId
+    const timer = window.setTimeout(() => {
+      if (isReady && lastAutoPlayedTrialId.current !== trialId) {
+        play(groupId)
+        lastAutoPlayedTrialId.current = trialId
+      }
+      setIsLocked(false)
+    }, AUTO_PLAY_DELAY_MS)
+    return () => window.clearTimeout(timer)
+  }, [currentTrial, isReady, play])
 
   // Clear any pending auto-advance / fade timers on unmount, so no state is
   // set after unmount.
@@ -87,6 +98,7 @@ function StagePlayer() {
       fadeTimer.current = null
     }
     setIsFadingOut(false)
+    setIsLocked(false)
   }
 
   const handleForward = () => {
@@ -126,8 +138,10 @@ function StagePlayer() {
     })
 
     if (isCorrect) {
-      // Hold the green feedback for a beat, then slow-fade out and advance to
-      // the next trial (which fades back in) — a gentle transition for kids.
+      // Lock + gray the screen immediately, hold the green feedback for a beat,
+      // then slow-fade out and advance to the next trial (which fades back in).
+      // The lock is released once the next page has settled (auto-play effect).
+      setIsLocked(true)
       advanceTimer.current = window.setTimeout(() => {
         advanceTimer.current = null
         setIsFadingOut(true)
@@ -150,6 +164,7 @@ function StagePlayer() {
 
   return (
     <div className="stage-player">
+      {isLocked && <div className="lock-overlay" aria-hidden="true" />}
       <div className="stage-badge" aria-label={`Stage ${stageNumber}`}>
         {stageNumber}
       </div>
