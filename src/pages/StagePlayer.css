@@ -1,4 +1,5 @@
 .stage-player {
+  position: relative;
   width: 100%;
   min-height: 100vh;
   padding: var(--spacing-lg);
@@ -7,14 +8,30 @@
   direction: rtl;
 }
 
+/* Numeric stage badge pinned to a top corner (leading edge in RTL = right).
+   Replaces the old "שלב: stage-1" text header — minimal-text, number-only. */
+.stage-badge {
+  position: absolute;
+  top: var(--spacing-lg);
+  inset-inline-start: var(--spacing-lg);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 2px solid white;
+  color: white;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+
 .stage-header {
   text-align: center;
   margin-bottom: var(--spacing-xl);
-}
-
-.stage-header h2 {
-  font-size: 32px;
-  margin-bottom: var(--spacing-md);
 }
 
 .position-indicator {

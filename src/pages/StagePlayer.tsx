@@ -124,11 +124,16 @@ function StagePlayer() {
   }
 
   const currentAnswer = answers[currentIndex] ?? null
+  // Minimal-text UI: show the stage as a numeric corner badge (e.g. "stage-1"
+  // -> "1") instead of a Hebrew "שלב" label — pre-literate, icon/number only.
+  const stageNumber = stage.id.replace(/\D/g, '') || stage.id
 
   return (
     <div className="stage-player">
+      <div className="stage-badge" aria-label={`Stage ${stageNumber}`}>
+        {stageNumber}
+      </div>
       <div className="stage-header">
-        <h2>שלב: {stage.id}</h2>
         <div className="position-indicator">
           <span className="position-count">
             {currentIndex + 1} / {trials.length}
