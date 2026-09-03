@@ -6,8 +6,11 @@ import { generateTrial, type Trial } from '../engine/stageRunner'
 import { useAudioPlayer } from '../hooks/useAudioPlayer'
 import './StagePlayer.css'
 
-// Auto-advance delay after a correct tap, within the 800-1200ms UX range.
-const AUTO_ADVANCE_DELAY_MS = 1000
+// After a correct tap, hold the green feedback visible this long before
+// starting the fade-out transition to the next trial.
+const AUTO_ADVANCE_DELAY_MS = 3000
+// Duration of the slow crossfade out (and back in) between trials.
+const FADE_DURATION_MS = 800
 
 interface TrialAnswer {
   selectedGroupId: NikudGroupId
@@ -22,8 +25,11 @@ function StagePlayer() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<Array<TrialAnswer | null>>([])
   const [usedSyllables, setUsedSyllables] = useState<Set<string>>(new Set())
+  // True while the current trial is fading out just before an auto-advance.
+  const [isFadingOut, setIsFadingOut] = useState(false)
 
   const advanceTimer = useRef<number | null>(null)
+  const fadeTimer = useRef<number | null>(null)
   const lastAutoPlayedTrialId = useRef<string | null>(null)
 
   // Generate first trial when stage loads. Intentionally depends on stage.id
@@ -56,21 +62,35 @@ function StagePlayer() {
     }
   }, [isReady, currentTrial, play])
 
-  // Clear any pending auto-advance timer on unmount, so no state is set
-  // after unmount.
+  // Clear any pending auto-advance / fade timers on unmount, so no state is
+  // set after unmount.
   useEffect(() => {
     return () => {
       if (advanceTimer.current !== null) {
         window.clearTimeout(advanceTimer.current)
       }
+      if (fadeTimer.current !== null) {
+        window.clearTimeout(fadeTimer.current)
+      }
     }
   }, [])
 
-  const handleForward = () => {
+  // Cancel any pending auto-advance countdown or in-progress fade (e.g. when
+  // the child manually navigates or re-answers).
+  const cancelAutoAdvance = () => {
     if (advanceTimer.current !== null) {
       window.clearTimeout(advanceTimer.current)
       advanceTimer.current = null
     }
+    if (fadeTimer.current !== null) {
+      window.clearTimeout(fadeTimer.current)
+      fadeTimer.current = null
+    }
+    setIsFadingOut(false)
+  }
+
+  const handleForward = () => {
+    cancelAutoAdvance()
 
     if (currentIndex < trials.length - 1) {
       setCurrentIndex((prev) => prev + 1)
@@ -85,10 +105,7 @@ function StagePlayer() {
   }
 
   const handleBack = () => {
-    if (advanceTimer.current !== null) {
-      window.clearTimeout(advanceTimer.current)
-      advanceTimer.current = null
-    }
+    cancelAutoAdvance()
     if (currentIndex > 0) {
       setCurrentIndex((prev) => prev - 1)
     }
@@ -97,10 +114,7 @@ function StagePlayer() {
   const handleOptionSelect = (groupId: NikudGroupId) => {
     if (!currentTrial) return
 
-    if (advanceTimer.current !== null) {
-      window.clearTimeout(advanceTimer.current)
-      advanceTimer.current = null
-    }
+    cancelAutoAdvance()
 
     const isCorrect = groupId === currentTrial.correctGroupId
     const answerIndex = currentIndex
@@ -112,9 +126,15 @@ function StagePlayer() {
     })
 
     if (isCorrect) {
+      // Hold the green feedback for a beat, then slow-fade out and advance to
+      // the next trial (which fades back in) — a gentle transition for kids.
       advanceTimer.current = window.setTimeout(() => {
         advanceTimer.current = null
-        handleForward()
+        setIsFadingOut(true)
+        fadeTimer.current = window.setTimeout(() => {
+          fadeTimer.current = null
+          handleForward()
+        }, FADE_DURATION_MS)
       }, AUTO_ADVANCE_DELAY_MS)
     }
   }
@@ -153,7 +173,7 @@ function StagePlayer() {
         </div>
       </div>
 
-      <div className="trial-content">
+      <div className={`trial-content${isFadingOut ? ' fading-out' : ''}`}>
         <div className="audio-display">
           <button
             className="play-audio-button"

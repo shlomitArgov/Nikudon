@@ -68,6 +68,14 @@
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-xl);
+  /* Slow crossfade between trials on auto-advance (matches FADE_DURATION_MS). */
+  transition: opacity 0.8s ease;
+}
+
+.trial-content.fading-out {
+  opacity: 0;
+  /* Ignore taps while the old trial is fading away. */
+  pointer-events: none;
 }
 
 .audio-display {
