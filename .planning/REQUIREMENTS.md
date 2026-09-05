@@ -17,15 +17,15 @@ Requirements for the level-1 vertical slice. Each maps to roadmap phases.
 ### Curriculum
 
 - [ ] **CONT-01**: Child can select any of the 22 Hebrew consonants they already know
-- [ ] **CONT-02**: For a chosen letter, level 1 drills the "ah" sound (patach/kamatz) and "ee" sound (hiriq)
-- [ ] **CONT-03**: When a sound has multiple graphemes, the displayed symbol is randomly chosen per trial
-- [ ] **CONT-04**: Kamatz Katan is excluded from all content
+- [x] **CONT-02**: For a chosen letter, level 1 drills the "ah" sound (patach/kamatz) and "ee" sound (hiriq)
+- [x] **CONT-03**: When a sound has multiple graphemes, the displayed symbol is randomly chosen per trial
+- [x] **CONT-04**: Kamatz Katan is excluded from all content
 
 ### Gameplay Engine
 
-- [ ] **ENG-01**: Trial distractor options are drawn only from sound-groups relevant to the current stage — never never-taught groups
-- [ ] **ENG-02**: Two niqqud with the same modern pronunciation are never presented as separate options in the same trial
-- [ ] **ENG-03**: Mastery requires both the minimum trial count and the accuracy threshold (fixes existing boundary bug)
+- [x] **ENG-01**: Trial distractor options are drawn only from sound-groups relevant to the current stage — never never-taught groups
+- [x] **ENG-02**: Two niqqud with the same modern pronunciation are never presented as separate options in the same trial
+- [x] **ENG-03**: Mastery requires both the minimum trial count and the accuracy threshold (fixes existing boundary bug) — engine fixed; mastery UI itself deferred (removed during the Phase 1 UX iteration)
 
 ### Navigation & Feedback
 
@@ -79,12 +79,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUDIO-03 | Phase 1 | Pending real-device sign-off (01-02) |
 | AUDIO-04 | Phase 1 | Complete |
 | CONT-01 | Phase 3 | Pending |
-| CONT-02 | Phase 2 | Pending |
-| CONT-03 | Phase 2 | Pending |
-| CONT-04 | Phase 2 | Pending |
-| ENG-01 | Phase 2 | Pending |
-| ENG-02 | Phase 2 | Pending |
-| ENG-03 | Phase 2 | Pending |
+| CONT-02 | Phase 2 | Complete (PR pending review) |
+| CONT-03 | Phase 2 | Complete (PR pending review) |
+| CONT-04 | Phase 2 | Complete (PR pending review) |
+| ENG-01 | Phase 2 | Complete (PR pending review) |
+| ENG-02 | Phase 2 | Complete (PR pending review) |
+| ENG-03 | Phase 2 | Complete engine; mastery UI deferred |
 | NAV-01 | Phase 4 | Pending |
 | NAV-02 | Phase 3 | Pending |
 | NAV-03 | Phase 4 | Pending |

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { getStage, getFirstStage } from '../content/stages'
-import { getNikudGroup, type NikudGroupId } from '../content/nikudGroups'
+import { type NikudGroupId } from '../content/nikudGroups'
 import { generateTrial, type Trial } from '../engine/stageRunner'
 import { useAudioPlayer } from '../hooks/useAudioPlayer'
 import './StagePlayer.css'
@@ -201,11 +201,9 @@ function StagePlayer() {
 
         <div className="options-container">
           <div className="options">
-            {currentTrial.options.map((groupId) => {
-              const group = getNikudGroup(groupId)
-              if (!group) return null
-
-              const isSelectedAnswer = currentAnswer?.selectedGroupId === groupId
+            {currentTrial.options.map((option) => {
+              const isSelectedAnswer =
+                currentAnswer?.selectedGroupId === option.groupId
               let buttonClass = 'option-button'
               if (isSelectedAnswer) {
                 buttonClass += currentAnswer!.isCorrect ? ' correct' : ' incorrect'
@@ -213,11 +211,11 @@ function StagePlayer() {
 
               return (
                 <button
-                  key={groupId}
+                  key={option.groupId}
                   className={buttonClass}
-                  onClick={() => handleOptionSelect(groupId)}
+                  onClick={() => handleOptionSelect(option.groupId)}
                 >
-                  {group.label}
+                  {option.grapheme}
                 </button>
               )
             })}

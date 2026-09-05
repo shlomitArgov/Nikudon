@@ -28,10 +28,10 @@ See: .planning/PROJECT.md (updated 2026-07-11)
 
 ## Current Position
 
-Phase: 01 (real-audio-playback-layer) — EXECUTING
-Plan: 2 of 2
-Status: Ready to execute
-Last activity: 2026-09-03 — Completed quick task 260903-b80 (StagePlayer drill UX iteration from playtest feedback)
+Phase: 02 (curriculum-trial-correctness) — implemented on branch, PR pending review
+Plan: —
+Status: Phase 2 implemented directly (not via GSD execute pipeline, for reliability); PR open against main
+Last activity: 2026-09-05 — Implemented Phase 2 (trial-generation correctness + level-1 {ah,ee} curriculum, random grapheme display, mastery boundary fix)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -72,7 +72,11 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+Queued playtest-feedback features (to build after Phase 2 review):
+- **Home level-select + niqqud-name gate**: main page lists levels; each shows its niqqud as buttons; tapping one plays that niqqud's NAME (needs new placeholder name audio via `say`); the child must tap every one of a level's niqqud at least once before entering that level.
+- **Drill home button with confirm**: a home icon on StagePlayer to return to the main menu, gated by an icon-based (✓/✕) "are you sure?" confirmation so a child can't accidentally leave mid-drill.
+
+Also still open on Phase 1: real-device (iPad/Android) sign-off (01-02) and swapping placeholder audio for real native-speaker recordings.
 
 ### Blockers/Concerns
 

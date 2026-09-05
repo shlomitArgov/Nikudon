@@ -18,8 +18,11 @@ export interface Stage {
 export const stages: Stage[] = [
   {
     id: 'stage-1',
-    introducedGroupId: 'a', // פַּתַח/קָמַץ (the "a" sound)
-    reviewGroupIds: [], // First stage, no review
+    introducedGroupId: 'a', // Patach/Kamatz — the "ah" sound
+    // Level 1 drills the "ah" and "ee" sounds together, so "ee" (Hiriq, group
+    // 'i') is in scope from the start. Both have recorded audio; the remaining
+    // sounds do not yet, so they stay out of the reachable level.
+    reviewGroupIds: ['i'], // Hiriq — the "ee" sound
     miniGameType: 'hearAndTap',
   },
   {
@@ -60,6 +63,15 @@ export function getStage(id: string): Stage | undefined {
  */
 export function getFirstStage(): Stage {
   return stages[0]
+}
+
+/**
+ * All sound-groups in scope for a stage: the introduced group plus any review
+ * groups, de-duplicated. Trials draw both their correct answer and their
+ * distractors only from this set, so an untaught sound never appears (ENG-01).
+ */
+export function getStageGroupIds(stage: Stage): NikudGroupId[] {
+  return Array.from(new Set([stage.introducedGroupId, ...stage.reviewGroupIds]))
 }
 
 /**
