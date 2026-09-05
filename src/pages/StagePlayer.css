@@ -1,0 +1,247 @@
+.stage-player {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: var(--spacing-lg);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  direction: rtl;
+}
+
+/* Numeric stage badge pinned to a top corner (leading edge in RTL = right).
+   Replaces the old "שלב: stage-1" text header — minimal-text, number-only. */
+.stage-badge {
+  position: absolute;
+  top: var(--spacing-lg);
+  inset-inline-start: var(--spacing-lg);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 2px solid white;
+  color: white;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Locks the screen during the auto-advance transition: a translucent gray
+   veil that dims the content and blocks all taps underneath. */
+.lock-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: rgba(70, 70, 85, 0.55);
+}
+
+.stage-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.position-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-medium);
+  opacity: 0.9;
+}
+
+.position-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.position-status {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.status-correct {
+  color: var(--color-success);
+}
+
+.status-incorrect {
+  color: var(--color-error);
+}
+
+.trial-content {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xl);
+  /* Slow crossfade between trials on auto-advance (matches FADE_DURATION_MS). */
+  transition: opacity 0.8s ease;
+}
+
+.trial-content.fading-out {
+  opacity: 0;
+  /* Ignore taps while the old trial is fading away. */
+  pointer-events: none;
+}
+
+.audio-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.play-audio-button {
+  font-size: 64px;
+  padding: var(--spacing-lg);
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid white;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.play-audio-button:active {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.options-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  justify-content: center;
+  width: 100%;
+}
+
+.option-button {
+  position: relative;
+  font-size: 48px;
+  font-weight: 600;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  min-width: 150px;
+  min-height: 100px;
+  background-color: white;
+  color: var(--color-primary);
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.option-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.option-button:active {
+  transform: scale(0.95);
+}
+
+.option-button.correct {
+  background-color: var(--color-success);
+  color: white;
+  animation: pulse 0.5s ease;
+}
+
+.option-button.correct::after {
+  content: '✓';
+  position: absolute;
+  top: -10px;
+  inset-inline-end: -10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--color-success);
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.option-button.incorrect {
+  background-color: var(--color-error);
+  border: 3px solid var(--color-error);
+  color: white;
+}
+
+.option-button.incorrect::after {
+  content: '✕';
+  position: absolute;
+  top: -10px;
+  inset-inline-end: -10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--color-error);
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.nav-container {
+  margin-top: var(--spacing-xl);
+  display: flex;
+  justify-content: center;
+  gap: calc(var(--spacing-xl) * 2);
+}
+
+.nav-button {
+  width: 80px;
+  height: 80px;
+  font-size: 40px;
+  padding: 0;
+  background-color: white;
+  color: var(--color-primary);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nav-button:hover:not(:disabled) {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.nav-button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.nav-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
