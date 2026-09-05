@@ -1,14 +1,23 @@
-import { Stage } from '../content/stages'
-import { NikudGroupId, getNikudGroup, getAllNikudGroupIds } from '../content/nikudGroups'
+import { Stage, getStageGroupIds } from '../content/stages'
+import { NikudGroupId, getNikudGroup } from '../content/nikudGroups'
+
+/**
+ * One selectable answer in a trial: a sound-group plus the specific niqqud
+ * grapheme chosen to be displayed for it this trial (CONT-03).
+ */
+export interface TrialOption {
+  groupId: NikudGroupId
+  grapheme: string
+}
 
 /**
  * Trial/question in a stage
  */
 export interface Trial {
   id: string
-  correctGroupId: NikudGroupId // The correct answer (nikud group)
-  options: NikudGroupId[] // Available answer options (2-3 groups, all with unique sounds)
-  audioSyllable: string // Syllable to play (e.g., "בַּ")
+  correctGroupId: NikudGroupId // The correct answer (nikud sound-group)
+  options: TrialOption[] // Answer options: distinct sounds, each with a shown grapheme
+  audioSyllable: string // Example syllable for the correct sound
 }
 
 /**
@@ -55,24 +64,27 @@ export function generateTrial(
   stage: Stage,
   usedSyllables: Set<string> = new Set()
 ): Trial {
-  // Randomly select the correct answer (weighted toward the introduced group)
-  // 60% chance for introduced group, 40% split among review groups
-  const random = Math.random()
+  // The set of sounds this level teaches — the correct answer AND the
+  // distractors are both drawn only from here, so an untaught sound never
+  // appears as an option (ENG-01).
+  const scopeGroupIds = getStageGroupIds(stage)
+
+  // Randomly select the correct sound-group, weighted toward the newly
+  // introduced group (60% introduced, 40% split among in-scope review groups).
   let correctGroupId: NikudGroupId
-  if (random < 0.6 || stage.reviewGroupIds.length === 0) {
+  if (Math.random() < 0.6 || stage.reviewGroupIds.length === 0) {
     correctGroupId = stage.introducedGroupId
   } else {
     const reviewIndex = Math.floor(Math.random() * stage.reviewGroupIds.length)
     correctGroupId = stage.reviewGroupIds[reviewIndex]
   }
 
-  // Get example syllables for the correct group
   const correctGroup = getNikudGroup(correctGroupId)
   if (!correctGroup) {
     throw new Error(`Invalid group ID: ${correctGroupId}`)
   }
 
-  // Select a syllable that hasn't been used recently
+  // Choose an example syllable for the correct sound, avoiding recent repeats.
   const availableSyllables = correctGroup.exampleSyllables.filter(
     (s) => !usedSyllables.has(s)
   )
@@ -83,27 +95,37 @@ export function generateTrial(
           Math.floor(Math.random() * correctGroup.exampleSyllables.length)
         ]
 
-  // Generate options: correct answer + 1-2 incorrect options
-  // Ensure all options have unique sounds (different group IDs)
-  // If stage doesn't have enough review groups, use all available groups as potential distractors
-  const allAvailableGroups = getAllNikudGroupIds()
-  const incorrectGroups = allAvailableGroups.filter((id) => id !== correctGroupId)
-  const numOptions = Math.random() < 0.5 ? 2 : 3 // Always show 2-3 options
-  const numIncorrect = numOptions - 1
+  // Distractors come ONLY from other in-scope sound-groups (ENG-01). Each
+  // option is a distinct sound-group, so no two options can ever sound
+  // identical in the same trial (ENG-02).
+  const distractorPool = scopeGroupIds.filter((id) => id !== correctGroupId)
+  const shuffledDistractors = [...distractorPool].sort(() => Math.random() - 0.5)
 
-  // Select incorrect options randomly from all available groups
-  const shuffledIncorrect = [...incorrectGroups].sort(() => Math.random() - 0.5)
-  const selectedIncorrect = shuffledIncorrect.slice(0, numIncorrect)
+  // 2-3 options total, capped by how many distinct in-scope groups exist.
+  const maxOptions = Math.min(scopeGroupIds.length, Math.random() < 0.5 ? 2 : 3)
+  const numIncorrect = Math.min(shuffledDistractors.length, maxOptions - 1)
+  const selectedIncorrect = shuffledDistractors.slice(0, numIncorrect)
 
-  // Combine and shuffle all options
-  const allOptions = [correctGroupId, ...selectedIncorrect].sort(
+  const optionGroupIds = [correctGroupId, ...selectedIncorrect].sort(
     () => Math.random() - 0.5
   )
+
+  // CONT-03: display a randomly-chosen grapheme for each option's sound-group,
+  // so a sound with multiple spellings (e.g. Patach vs Kamatz for "ah") shows
+  // a different symbol across trials rather than always the same one.
+  const options: TrialOption[] = optionGroupIds.map((groupId) => {
+    const graphemes = getNikudGroup(groupId)?.graphemes ?? []
+    const grapheme =
+      graphemes.length > 0
+        ? graphemes[Math.floor(Math.random() * graphemes.length)]
+        : groupId
+    return { groupId, grapheme }
+  })
 
   return {
     id: `trial-${Date.now()}-${Math.random()}`,
     correctGroupId,
-    options: allOptions,
+    options,
     audioSyllable,
   }
 }
@@ -115,18 +137,15 @@ export function checkMastery(
   progress: StageProgress,
   config: MasteryConfig = DEFAULT_MASTERY_CONFIG
 ): boolean {
-  // Must complete minimum trials
+  // Mastery requires BOTH the minimum number of trials AND the accuracy
+  // threshold — never on a lucky short streak before minTrials is reached
+  // (ENG-03). The two conditions are ANDed, so a high streak over too few
+  // trials does not count, and neither does hitting the trial count with low
+  // accuracy. (config.maxTrials is reserved for a future "max attempts" cap
+  // and is intentionally not used to force mastery here.)
   if (progress.trialsCompleted < config.minTrials) {
     return false
   }
-
-  // If max trials reached, check accuracy
-  if (progress.trialsCompleted >= config.maxTrials) {
-    const accuracy = progress.trialsCorrect / progress.trialsCompleted
-    return accuracy >= config.requiredAccuracy
-  }
-
-  // Check if accuracy requirement is met (with minimum trials)
   const accuracy = progress.trialsCorrect / progress.trialsCompleted
   return accuracy >= config.requiredAccuracy
 }
