@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { getStage, getFirstStage } from '../content/stages'
 import { type NikudGroupId } from '../content/nikudGroups'
 import { generateTrial, type Trial } from '../engine/stageRunner'
@@ -22,6 +22,7 @@ interface TrialAnswer {
 
 function StagePlayer() {
   const { stageId } = useParams<{ stageId?: string }>()
+  const navigate = useNavigate()
   const { play, isReady } = useAudioPlayer()
   const [stage] = useState(getStage(stageId || '') || getFirstStage())
   const [trials, setTrials] = useState<Trial[]>([])
@@ -33,6 +34,8 @@ function StagePlayer() {
   // True from a correct tap until the next trial has settled — locks and grays
   // the screen (blocks taps) for the duration of the auto-advance transition.
   const [isLocked, setIsLocked] = useState(false)
+  // Whether the icon-only "leave to the main menu?" confirmation is showing.
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
 
   const advanceTimer = useRef<number | null>(null)
   const fadeTimer = useRef<number | null>(null)
@@ -153,6 +156,20 @@ function StagePlayer() {
     }
   }
 
+  // Leaving the drill is gated by an icon-only confirmation so a child can't
+  // exit to the menu by accident. Opening it also cancels any pending
+  // auto-advance so the drill doesn't move on behind the dialog.
+  const handleLeaveRequest = () => {
+    cancelAutoAdvance()
+    setShowLeaveConfirm(true)
+  }
+  const handleLeaveConfirm = () => {
+    navigate('/')
+  }
+  const handleLeaveCancel = () => {
+    setShowLeaveConfirm(false)
+  }
+
   if (!stage || !currentTrial) {
     return <div className="stage-player">טוען...</div>
   }
@@ -165,9 +182,39 @@ function StagePlayer() {
   return (
     <div className="stage-player">
       {isLocked && <div className="lock-overlay" aria-hidden="true" />}
+      {showLeaveConfirm && (
+        <div className="leave-confirm" role="dialog" aria-label="Leave to menu?">
+          <div className="leave-confirm-card">
+            <div className="leave-confirm-icon" aria-hidden="true">🏠</div>
+            <div className="leave-confirm-actions">
+              <button
+                className="confirm-button confirm-yes"
+                onClick={handleLeaveConfirm}
+                aria-label="Yes, go to menu"
+              >
+                ✓
+              </button>
+              <button
+                className="confirm-button confirm-no"
+                onClick={handleLeaveCancel}
+                aria-label="No, stay"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="stage-badge" aria-label={`Stage ${stageNumber}`}>
         {stageNumber}
       </div>
+      <button
+        className="home-button"
+        onClick={handleLeaveRequest}
+        aria-label="Home"
+      >
+        🏠
+      </button>
       <div className="stage-header">
         <div className="position-indicator">
           <span className="position-count">
