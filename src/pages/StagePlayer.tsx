@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getStage, getFirstStage } from '../content/stages'
-import { type NikudGroupId } from '../content/nikudGroups'
+import { getStage, getFirstStage, getStageGraphemes } from '../content/stages'
+import { type NikudGroupId, isolatedNiqud } from '../content/nikudGroups'
 import { generateTrial, type Trial } from '../engine/stageRunner'
 import { useAudioPlayer } from '../hooks/useAudioPlayer'
 import './StagePlayer.css'
@@ -178,6 +178,9 @@ function StagePlayer() {
   // Minimal-text UI: show the stage as a numeric corner badge (e.g. "stage-1"
   // -> "1") instead of a Hebrew "שלב" label — pre-literate, icon/number only.
   const stageNumber = stage.id.replace(/\D/g, '') || stage.id
+  // Mini niqqud reminders shown next to the stage number: tap to re-hear a
+  // niqqud's name if the child forgets it mid-drill (same set as the Home gate).
+  const levelGraphemes = getStageGraphemes(stage)
 
   return (
     <div className="stage-player">
@@ -205,8 +208,22 @@ function StagePlayer() {
           </div>
         </div>
       )}
-      <div className="stage-badge" aria-label={`Stage ${stageNumber}`}>
-        {stageNumber}
+      <div className="stage-corner">
+        <div className="stage-badge" aria-label={`Stage ${stageNumber}`}>
+          {stageNumber}
+        </div>
+        <div className="niqud-reminder">
+          {levelGraphemes.map((g) => (
+            <button
+              key={g.audioId}
+              className="niqud-reminder-button"
+              onClick={() => play(g.audioId)}
+              aria-label={g.name}
+            >
+              {isolatedNiqud(g)}
+            </button>
+          ))}
+        </div>
       </div>
       <button
         className="home-button"

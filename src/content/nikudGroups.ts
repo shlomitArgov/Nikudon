@@ -87,3 +87,13 @@ export function getNikudGroup(id: NikudGroupId): NikudGroup | undefined {
 export function getAllNikudGroupIds(): NikudGroupId[] {
   return nikudGroups.map((group) => group.id)
 }
+
+/**
+ * Display a niqqud on its own — without a Hebrew letter — by swapping the Alef
+ * carrier for a dotted-circle placeholder (◌), the Unicode-standard way to show
+ * a combining mark in isolation. Graphemes with no Alef carrier (e.g. Shuruk,
+ * which is Vav + Dagesh) are returned unchanged.
+ */
+export function isolatedNiqud(grapheme: NikudGrapheme): string {
+  return grapheme.glyph.replace(CARRIER, '◌')
+}

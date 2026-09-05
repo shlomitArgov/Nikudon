@@ -8,12 +8,21 @@
   direction: rtl;
 }
 
-/* Numeric stage badge pinned to a top corner (leading edge in RTL = right).
-   Replaces the old "שלב: stage-1" text header — minimal-text, number-only. */
-.stage-badge {
+/* Top-corner cluster (leading edge in RTL = right): the numeric stage badge
+   plus the mini niqqud reminders sitting next to it. */
+.stage-corner {
   position: absolute;
   top: var(--spacing-lg);
   inset-inline-start: var(--spacing-lg);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+/* Numeric stage badge — minimal-text, number-only (replaced the old
+   "שלב: stage-1" text header). */
+.stage-badge {
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -27,6 +36,32 @@
   align-items: center;
   justify-content: center;
   font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+/* Mini niqqud reminders — tap to re-hear a niqqud's name mid-drill. */
+.niqud-reminder {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.niqud-reminder-button {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.85);
+  color: var(--color-primary);
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.niqud-reminder-button:active {
+  transform: scale(0.92);
 }
 
 /* Locks the screen during the auto-advance transition: a translucent gray

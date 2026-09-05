@@ -95,6 +95,8 @@
 .niqud-button.tapped::after {
   content: '✓';
   position: absolute;
+  /* Decorative only — must not intercept taps meant for adjacent buttons. */
+  pointer-events: none;
   top: -8px;
   inset-inline-end: -8px;
   width: 26px;

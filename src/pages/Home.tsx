@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getFirstStage, getStageGraphemes, type Stage } from '../content/stages'
+import { isolatedNiqud } from '../content/nikudGroups'
 import { useAudioPlayer, unlockAudio } from '../hooks/useAudioPlayer'
 import './Home.css'
 
@@ -15,14 +16,15 @@ function Home() {
   const levels: Stage[] = [getFirstStage()]
 
   const handleNiqudTap = (levelId: string, audioId: string) => {
-    // Plays the niqqud's name. The first tap of the session also unlocks the
-    // shared AudioContext (play() calls resume() synchronously inside the tap).
-    play(audioId)
+    // Mark as heard FIRST, so the gate always updates regardless of anything
+    // audio-related. Then play the niqqud's name (the first tap of the session
+    // also unlocks the shared AudioContext via play()'s synchronous resume()).
     setTapped((prev) => {
       const forLevel = new Set(prev[levelId] ?? [])
       forLevel.add(audioId)
       return { ...prev, [levelId]: forLevel }
     })
+    play(audioId)
   }
 
   const handleEnter = (stage: Stage) => {
@@ -60,7 +62,7 @@ function Home() {
                         onClick={() => handleNiqudTap(stage.id, g.audioId)}
                         aria-label={g.name}
                       >
-                        {g.glyph}
+                        {isolatedNiqud(g)}
                       </button>
                     )
                   })}

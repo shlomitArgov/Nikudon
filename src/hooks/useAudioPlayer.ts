@@ -93,7 +93,13 @@ export function useAudioPlayer() {
 
     // Stop any still-playing previous clip so rapid repeat taps sound clean,
     // not overlapping/garbled (supports AUDIO-02's "no lag on repeated taps").
-    currentSource.current?.stop()
+    // Guard: stop() can throw in some engines if the node has already ended;
+    // swallow it so play() stays truly fail-soft (never throws to the caller).
+    try {
+      currentSource.current?.stop()
+    } catch {
+      /* previous source already ended — nothing to stop */
+    }
 
     const source = ctx.createBufferSource() // one-shot node — fresh instance per tap
     source.buffer = buffer
