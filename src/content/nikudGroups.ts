@@ -7,65 +7,66 @@
  * that distinguishes them. Kamatz here is always the "ah" grapheme in group 'a'.
  */
 
-// Alef is the neutral display carrier for every niqqud grapheme shown as an
-// answer option. The combining mark sits on this carrier so the child sees the
-// niqqud symbol itself, not a specific consonant.
+// Alef is the neutral display carrier for every niqqud grapheme shown to the
+// child. The combining mark sits on this carrier so the child sees the niqqud
+// symbol itself, not a specific consonant.
 const CARRIER = 'א' // Hebrew letter Alef
+
+/**
+ * A single niqqud sign: the glyph to display, its Hebrew name, and the key for
+ * its recorded name-audio clip (played when the child taps it to learn the
+ * name, separate from the vowel-sound clip keyed by the group id).
+ */
+export interface NikudGrapheme {
+  glyph: string // Alef-carrier display glyph, e.g. אַ
+  name: string // Hebrew name of the sign
+  audioId: string // key for the name-audio clip, e.g. 'patach'
+}
 
 export interface NikudGroup {
   id: string // 'a', 'e', 'i', 'o', 'u'
-  label: string // Display label (Alef carrier + a representative mark)
-  members: string[] // Names of the individual nikud signs in this group
-  graphemes: string[] // Displayable glyphs (carrier + one mark) for this sound
+  label: string // Representative display glyph for the group
+  graphemes: NikudGrapheme[] // Individual signs in this sound-group
   exampleSyllables: string[] // Example syllables using letters with this nikud
 }
 
 export const nikudGroups: NikudGroup[] = [
   {
     id: 'a',
-    label: CARRIER + 'ַ', // Alef + Patach
-    members: ['פַּתַח', 'קָמַץ'], // Patakh, Kamatz
+    label: CARRIER + 'ַ',
     graphemes: [
-      CARRIER + 'ַ', // Alef + Patach
-      CARRIER + 'ָ', // Alef + Kamatz (Gadol)
+      { glyph: CARRIER + 'ַ', name: 'פַּתַח', audioId: 'patach' },
+      { glyph: CARRIER + 'ָ', name: 'קָמַץ', audioId: 'kamatz' },
     ],
     exampleSyllables: ['בַּ', 'בָּ', 'קַ', 'קָ', 'פַּ', 'פָּ'],
   },
   {
     id: 'e',
-    label: CARRIER + 'ֶ', // Alef + Segol
-    members: ['סֶגּוֹל', 'צֵירֵי'], // Segol, Tzeire
+    label: CARRIER + 'ֶ',
     graphemes: [
-      CARRIER + 'ֶ', // Alef + Segol
-      CARRIER + 'ֵ', // Alef + Tzeire
+      { glyph: CARRIER + 'ֶ', name: 'סֶגּוֹל', audioId: 'segol' },
+      { glyph: CARRIER + 'ֵ', name: 'צֵירֵי', audioId: 'tzeire' },
     ],
     exampleSyllables: ['בֶּ', 'בֵּ', 'סֶ', 'צֵ', 'פֶּ', 'פֵּ'],
   },
   {
     id: 'i',
-    label: CARRIER + 'ִ', // Alef + Hiriq
-    members: ['חִירִיק'], // Hiriq
-    graphemes: [
-      CARRIER + 'ִ', // Alef + Hiriq
-    ],
+    label: CARRIER + 'ִ',
+    graphemes: [{ glyph: CARRIER + 'ִ', name: 'חִירִיק', audioId: 'hiriq' }],
     exampleSyllables: ['בִּ', 'חִ', 'פִּ', 'קִ', 'סִ'],
   },
   {
     id: 'o',
-    label: CARRIER + 'ֹ', // Alef + Holam
-    members: ['חוֹלָם'], // Holam
-    graphemes: [
-      CARRIER + 'ֹ', // Alef + Holam Haser
-    ],
+    label: CARRIER + 'ֹ',
+    graphemes: [{ glyph: CARRIER + 'ֹ', name: 'חוֹלָם', audioId: 'holam' }],
     exampleSyllables: ['בֹּ', 'חֹ', 'פֹּ', 'קֹ', 'סֹ'],
   },
   {
     id: 'u',
-    label: CARRIER + 'ֻ', // Alef + Kubutz
-    members: ['קֻבּוּץ', 'שׁוּרוּק'], // Kubutz, Shuruk
+    label: CARRIER + 'ֻ',
     graphemes: [
-      CARRIER + 'ֻ', // Alef + Kubutz
-      'וּ', // Vav + Dagesh (Shuruk)
+      { glyph: CARRIER + 'ֻ', name: 'קֻבּוּץ', audioId: 'kubutz' },
+      { glyph: 'וּ', name: 'שׁוּרוּק', audioId: 'shuruk' },
     ],
     exampleSyllables: ['בֻּ', 'בּוּ', 'קֻ', 'קוּ', 'פֻּ', 'פּוּ'],
   },

@@ -1,7 +1,7 @@
 /**
  * Tap-to-hear playback hook — owns a module-level singleton AudioContext,
  * preloads/decodes all known clips on mount, and exposes a synchronous-safe
- * play(groupId) for the drill's play button.
+ * play(key) for the drill's play button and the Home niqqud-name buttons.
  *
  * Fail-soft by design (console.warn, never throw): unlike stageRunner.ts's
  * throw-on-invalid-input pattern (a programmer-error case), a missing or
@@ -10,8 +10,7 @@
  * because a clip hasn't been recorded yet. Do not "fix" this to throw.
  */
 import { useEffect, useRef, useCallback, useState } from 'react'
-import { getAudioUrl, getKnownGroupIds } from '../content/audioAssets'
-import type { NikudGroupId } from '../content/nikudGroups'
+import { getAudioUrl, getAllAudioKeys } from '../content/audioAssets'
 
 // Module-level singleton — survives component remounts, respects Safari's
 // documented cap on concurrently-open AudioContext instances.
@@ -47,7 +46,7 @@ export function unlockAudio(): void {
 }
 
 export function useAudioPlayer() {
-  const bufferCache = useRef(new Map<NikudGroupId, AudioBuffer>())
+  const bufferCache = useRef(new Map<string, AudioBuffer>())
   const currentSource = useRef<AudioBufferSourceNode | null>(null)
   const [isReady, setIsReady] = useState(false)
 
@@ -58,17 +57,17 @@ export function useAudioPlayer() {
     const ctx = getAudioContext()
 
     Promise.all(
-      getKnownGroupIds().map(async (groupId) => {
-        const url = getAudioUrl(groupId)
+      getAllAudioKeys().map(async (key) => {
+        const url = getAudioUrl(key)
         if (!url) return
         try {
           const res = await fetch(url) // resolves from Workbox precache, offline-capable
           const arrayBuffer = await res.arrayBuffer()
           const decoded = await ctx.decodeAudioData(arrayBuffer)
-          if (!cancelled) bufferCache.current.set(groupId, decoded)
+          if (!cancelled) bufferCache.current.set(key, decoded)
         } catch (err) {
           // D-03: fail soft — log only, never throw/alert.
-          console.warn(`[useAudioPlayer] failed to preload clip for "${groupId}"`, err)
+          console.warn(`[useAudioPlayer] failed to preload clip for "${key}"`, err)
         }
       })
     ).then(() => {
@@ -80,15 +79,15 @@ export function useAudioPlayer() {
     }
   }, [])
 
-  const play = useCallback((groupId: NikudGroupId) => {
+  const play = useCallback((key: string) => {
     const ctx = getAudioContext()
     // Synchronous, no await before this line — required for iOS unlock.
     void ctx.resume()
 
-    const buffer = bufferCache.current.get(groupId)
+    const buffer = bufferCache.current.get(key)
     if (!buffer) {
       // D-03: fail soft — button stays tappable, no crash, no alert().
-      console.warn(`[useAudioPlayer] no audio clip available for "${groupId}"`)
+      console.warn(`[useAudioPlayer] no audio clip available for "${key}"`)
       return
     }
 

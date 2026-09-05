@@ -22,12 +22,100 @@
   margin-bottom: var(--spacing-xl);
 }
 
-/* Play button */
-.home-start-button {
-  width: 120px;
-  height: 120px;
-  min-width: 120px;
-  min-height: 120px;
+/* Level list */
+.level-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  align-items: center;
+}
+
+/* One level: number badge + its niqqud-name buttons + a gated enter button. */
+.level-card {
+  direction: rtl;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  width: 100%;
+}
+
+.level-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.25);
+  border: 2px solid white;
+  color: white;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.level-niquds {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Tapping a niqqud plays its spoken name. Touch target >= 64px. */
+.niqud-button {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  font-size: 40px;
+  font-weight: 600;
+  background-color: white;
+  color: var(--color-primary);
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+
+.niqud-button:active {
+  transform: scale(0.95);
+}
+
+/* Once heard at least once, mark the niqqud with a small check so the child
+   can see which ones are still needed to unlock the level. */
+.niqud-button.tapped::after {
+  content: '✓';
+  position: absolute;
+  top: -8px;
+  inset-inline-end: -8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: var(--color-success);
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Enter button — disabled (grayed) until every niqqud in the level was heard. */
+.enter-level-button {
+  width: 96px;
+  height: 96px;
+  min-width: 96px;
+  min-height: 96px;
   padding: 0;
   background-color: white;
   color: var(--color-primary);
@@ -36,22 +124,39 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
 
-.home-start-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+.enter-level-button:disabled {
+  opacity: 0.4;
+  background-color: rgba(255, 255, 255, 0.6);
+  cursor: not-allowed;
 }
 
-.home-start-button:active {
+/* Draw attention once the gate opens. */
+.enter-level-button.ready {
+  animation: enter-pulse 1.4s ease-in-out infinite;
+}
+
+.enter-level-button.ready:active {
   transform: scale(0.95);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: none;
+}
+
+@keyframes enter-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  }
 }
 
 .play-icon {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   margin-left: 4px; /* Slight offset to center the triangle visually */
 }
