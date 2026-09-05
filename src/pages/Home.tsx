@@ -62,7 +62,7 @@ function Home() {
                         onClick={() => handleNiqudTap(stage.id, g.audioId)}
                         aria-label={g.name}
                       >
-                        {isolatedNiqud(g)}
+                        <span className="niqud-glyph">{isolatedNiqud(g)}</span>
                       </button>
                     )
                   })}

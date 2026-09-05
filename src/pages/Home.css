@@ -73,7 +73,10 @@
   position: relative;
   width: 80px;
   height: 80px;
-  font-size: 40px;
+  /* Large so the bare niqqud mark fills most of the button (no letter). The
+     em box overflows the button and is clipped by overflow:hidden below. */
+  font-size: 110px;
+  line-height: 1;
   font-weight: 600;
   background-color: white;
   color: var(--color-primary);
@@ -83,11 +86,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   transition: transform 0.15s ease;
 }
 
 .niqud-button:active {
   transform: scale(0.95);
+}
+
+/* The bare niqqud mark. Sized by the button's font-size; lifted toward the
+   vertical centre because below-baseline marks otherwise sit low. The lift is
+   font-dependent — tune --niqud-lift if the mark sits too high or low. */
+.niqud-glyph {
+  display: block;
+  line-height: 1;
+  transform: translateY(var(--niqud-lift, -0.34em));
 }
 
 /* Once heard at least once, mark the niqqud with a small check so the child
@@ -97,10 +110,12 @@
   position: absolute;
   /* Decorative only — must not intercept taps meant for adjacent buttons. */
   pointer-events: none;
-  top: -8px;
-  inset-inline-end: -8px;
-  width: 26px;
-  height: 26px;
+  /* Tucked inside the button (not sticking out) so overflow:hidden — needed to
+     clip the oversized mark — doesn't clip the check badge too. */
+  top: 4px;
+  inset-inline-end: 4px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background-color: var(--color-success);
   color: white;

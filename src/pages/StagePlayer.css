@@ -52,16 +52,25 @@
   background-color: rgba(255, 255, 255, 0.85);
   color: var(--color-primary);
   border: none;
-  font-size: 24px;
+  /* Large so the bare mark fills most of the button; clipped to the button. */
+  font-size: 60px;
   line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .niqud-reminder-button:active {
   transform: scale(0.92);
+}
+
+/* Same lift as the Home niqqud glyph — centres the below-baseline mark. */
+.niqud-reminder-button .niqud-glyph {
+  display: block;
+  line-height: 1;
+  transform: translateY(var(--niqud-lift, -0.34em));
 }
 
 /* Locks the screen during the auto-advance transition: a translucent gray
