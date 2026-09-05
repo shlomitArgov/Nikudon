@@ -117,7 +117,7 @@ export function generateTrial(
     const graphemes = getNikudGroup(groupId)?.graphemes ?? []
     const grapheme =
       graphemes.length > 0
-        ? graphemes[Math.floor(Math.random() * graphemes.length)]
+        ? graphemes[Math.floor(Math.random() * graphemes.length)].glyph
         : groupId
     return { groupId, grapheme }
   })
