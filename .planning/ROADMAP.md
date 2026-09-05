@@ -99,6 +99,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Real Audio Playback Layer | 1/2 | In Progress|  |
-| 2. Level-1 Curriculum & Trial-Generation Correctness | 0/TBD | Not started | - |
+| 2. Level-1 Curriculum & Trial-Generation Correctness | 1/1 | Implemented (PR pending review) | - |
 | 3. Letter-Picker Screen | 0/TBD | Not started | - |
 | 4. Icon Navigation, Feedback Tone & Visual Polish | 0/TBD | Not started | - |
