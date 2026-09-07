@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { getFirstStage, getStageGraphemes, type Stage } from '../content/stages'
 import { isolatedNiqud } from '../content/nikudGroups'
 import { useAudioPlayer, unlockAudio } from '../hooks/useAudioPlayer'
-import LetterPicker from '../components/LetterPicker'
 import './Home.css'
 
 function Home() {
@@ -37,10 +36,6 @@ function Home() {
     <div className="home">
       <div className="home-content">
         <h1 className="home-title">ניקודון</h1>
-
-        <div className="letter-picker-slot">
-          <LetterPicker />
-        </div>
 
         <div className="level-list">
           {levels.map((stage) => {
