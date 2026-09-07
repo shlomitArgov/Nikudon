@@ -95,6 +95,21 @@ export function getAllNikudGroupIds(): NikudGroupId[] {
  * attaches to. Graphemes with no Alef carrier (e.g. Shuruk, which is Vav +
  * Dagesh) are returned unchanged.
  */
+/**
+ * The bare niqqud mark of a grapheme (its glyph with the Alef carrier removed),
+ * so it can be composed onto any chosen letter.
+ */
+export function graphemeMark(grapheme: NikudGrapheme): string {
+  return grapheme.glyph.replace(CARRIER, '')
+}
+
+/**
+ * A niqqud shown on a specific letter, e.g. niqudOn('ב', patach) -> 'בַ'.
+ */
+export function niqudOn(letter: string, grapheme: NikudGrapheme): string {
+  return letter + graphemeMark(grapheme)
+}
+
 export function isolatedNiqud(grapheme: NikudGrapheme): string {
   return grapheme.glyph.replace(CARRIER, ' ')
 }

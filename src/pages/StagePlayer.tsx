@@ -4,6 +4,8 @@ import { getStage, getFirstStage, getStageGraphemes } from '../content/stages'
 import { type NikudGroupId, isolatedNiqud } from '../content/nikudGroups'
 import { generateTrial, type Trial } from '../engine/stageRunner'
 import { useAudioPlayer } from '../hooks/useAudioPlayer'
+import { useSelectedLetter } from '../context/LetterContext'
+import LetterPicker from '../components/LetterPicker'
 import './StagePlayer.css'
 
 // After a correct tap, hold the (locked, grayed) feedback visible this long
@@ -23,6 +25,7 @@ interface TrialAnswer {
 function StagePlayer() {
   const { stageId } = useParams<{ stageId?: string }>()
   const navigate = useNavigate()
+  const { selectedLetter } = useSelectedLetter()
   const { play, isReady } = useAudioPlayer()
   const [stage] = useState(getStage(stageId || '') || getFirstStage())
   const [trials, setTrials] = useState<Trial[]>([])
@@ -250,6 +253,9 @@ function StagePlayer() {
             </span>
           )}
         </div>
+        <div className="letter-picker-slot">
+          <LetterPicker />
+        </div>
       </div>
 
       <div className={`trial-content${isFadingOut ? ' fading-out' : ''}`}>
@@ -279,7 +285,7 @@ function StagePlayer() {
                   className={buttonClass}
                   onClick={() => handleOptionSelect(option.groupId)}
                 >
-                  {option.grapheme}
+                  {selectedLetter + option.mark}
                 </button>
               )
             })}
