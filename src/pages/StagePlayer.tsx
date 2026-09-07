@@ -139,6 +139,11 @@ function StagePlayer() {
     const isCorrect = groupId === currentTrial.correctGroupId
     const answerIndex = currentIndex
 
+    // Audio feedback: play the sound of the tapped letter+niqqud (keyed by the
+    // selected letter and the option's sound-group, e.g. 'ב-a') so the child
+    // hears what they picked — whether right or wrong.
+    play(`${selectedLetter}-${groupId}`)
+
     setAnswers((prev) => {
       const next = [...prev]
       next[answerIndex] = { selectedGroupId: groupId, isCorrect }
