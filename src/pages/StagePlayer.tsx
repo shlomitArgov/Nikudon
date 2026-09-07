@@ -68,16 +68,18 @@ function StagePlayer() {
   useEffect(() => {
     if (!currentTrial) return
     const trialId = currentTrial.id
-    const groupId = currentTrial.correctGroupId
+    // Sound is per (letter, sound-group), e.g. 'ב-a' — so it matches the letter
+    // the niqqud is shown on, not a fixed Alef.
+    const soundKey = `${selectedLetter}-${currentTrial.correctGroupId}`
     const timer = window.setTimeout(() => {
       if (isReady && lastAutoPlayedTrialId.current !== trialId) {
-        play(groupId)
+        play(soundKey)
         lastAutoPlayedTrialId.current = trialId
       }
       setIsLocked(false)
     }, AUTO_PLAY_DELAY_MS)
     return () => window.clearTimeout(timer)
-  }, [currentTrial, isReady, play])
+  }, [currentTrial, isReady, play, selectedLetter])
 
   // Clear any pending auto-advance / fade timers on unmount, so no state is
   // set after unmount.
@@ -262,7 +264,7 @@ function StagePlayer() {
         <div className="audio-display">
           <button
             className="play-audio-button"
-            onClick={() => play(currentTrial.correctGroupId)}
+            onClick={() => play(`${selectedLetter}-${currentTrial.correctGroupId}`)}
             aria-label="Play audio"
           >
             🔊
