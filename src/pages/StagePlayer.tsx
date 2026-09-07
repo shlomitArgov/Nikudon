@@ -278,7 +278,7 @@ function StagePlayer() {
           )}
         </div>
         <div className="letter-picker-slot">
-          <LetterPicker />
+          <LetterPicker previewGroupId={currentTrial.correctGroupId} />
         </div>
       </div>
 
