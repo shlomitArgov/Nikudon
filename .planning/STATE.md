@@ -72,11 +72,15 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-Queued playtest-feedback features (to build after Phase 2 review):
-- **Home level-select + niqqud-name gate**: main page lists levels; each shows its niqqud as buttons; tapping one plays that niqqud's NAME (needs new placeholder name audio via `say`); the child must tap every one of a level's niqqud at least once before entering that level.
-- **Drill home button with confirm**: a home icon on StagePlayer to return to the main menu, gated by an icon-based (✓/✕) "are you sure?" confirmation so a child can't accidentally leave mid-drill.
+Done (on branch feat/menu-and-nav-gates, PR pending):
+- ✓ Home level screen + niqqud-name gate (tap each niqqud to hear its name; enter unlocks once all heard). Placeholder name clips patach/kamatz/hiriq added.
+- ✓ Drill home button with icon-only (✓/✕) leave confirmation.
 
-Also still open on Phase 1: real-device (iPad/Android) sign-off (01-02) and swapping placeholder audio for real native-speaker recordings.
+Still open:
+- Real-device (iPad/Android) sign-off for Phase 1 audio (01-02).
+- Swap placeholder audio (vowel sounds AND niqqud names) for real native-speaker recordings.
+- Home currently shows only level 1 (the audio-backed level); extend to more levels as content lands.
+- Delete the stale remote branch gsd/phase-01-real-audio-playback-layer (merged; deletion was blocked pending confirmation).
 
 ### Blockers/Concerns
 

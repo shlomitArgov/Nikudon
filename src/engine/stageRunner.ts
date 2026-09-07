@@ -1,5 +1,5 @@
 import { Stage, getStageGroupIds } from '../content/stages'
-import { NikudGroupId, getNikudGroup } from '../content/nikudGroups'
+import { NikudGroupId, getNikudGroup, graphemeMark } from '../content/nikudGroups'
 
 /**
  * One selectable answer in a trial: a sound-group plus the specific niqqud
@@ -7,7 +7,7 @@ import { NikudGroupId, getNikudGroup } from '../content/nikudGroups'
  */
 export interface TrialOption {
   groupId: NikudGroupId
-  grapheme: string
+  mark: string // bare niqqud mark; composed onto the chosen letter at render
 }
 
 /**
@@ -115,11 +115,11 @@ export function generateTrial(
   // a different symbol across trials rather than always the same one.
   const options: TrialOption[] = optionGroupIds.map((groupId) => {
     const graphemes = getNikudGroup(groupId)?.graphemes ?? []
-    const grapheme =
+    const mark =
       graphemes.length > 0
-        ? graphemes[Math.floor(Math.random() * graphemes.length)]
-        : groupId
-    return { groupId, grapheme }
+        ? graphemeMark(graphemes[Math.floor(Math.random() * graphemes.length)])
+        : ''
+    return { groupId, mark }
   })
 
   return {

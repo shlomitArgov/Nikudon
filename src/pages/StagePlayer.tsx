@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
-import { useParams } from 'react-router-dom'
-import { getStage, getFirstStage } from '../content/stages'
-import { type NikudGroupId } from '../content/nikudGroups'
+import { useParams, useNavigate } from 'react-router-dom'
+import { getStage, getFirstStage, getStageGraphemes } from '../content/stages'
+import { type NikudGroupId, isolatedNiqud } from '../content/nikudGroups'
 import { generateTrial, type Trial } from '../engine/stageRunner'
 import { useAudioPlayer } from '../hooks/useAudioPlayer'
+import { useSelectedLetter } from '../context/LetterContext'
+import LetterPicker from '../components/LetterPicker'
 import './StagePlayer.css'
 
 // After a correct tap, hold the (locked, grayed) feedback visible this long
@@ -22,6 +24,8 @@ interface TrialAnswer {
 
 function StagePlayer() {
   const { stageId } = useParams<{ stageId?: string }>()
+  const navigate = useNavigate()
+  const { selectedLetter } = useSelectedLetter()
   const { play, isReady } = useAudioPlayer()
   const [stage] = useState(getStage(stageId || '') || getFirstStage())
   const [trials, setTrials] = useState<Trial[]>([])
@@ -33,6 +37,8 @@ function StagePlayer() {
   // True from a correct tap until the next trial has settled — locks and grays
   // the screen (blocks taps) for the duration of the auto-advance transition.
   const [isLocked, setIsLocked] = useState(false)
+  // Whether the icon-only "leave to the main menu?" confirmation is showing.
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false)
 
   const advanceTimer = useRef<number | null>(null)
   const fadeTimer = useRef<number | null>(null)
@@ -62,16 +68,18 @@ function StagePlayer() {
   useEffect(() => {
     if (!currentTrial) return
     const trialId = currentTrial.id
-    const groupId = currentTrial.correctGroupId
+    // Sound is per (letter, sound-group), e.g. 'ב-a' — so it matches the letter
+    // the niqqud is shown on, not a fixed Alef.
+    const soundKey = `${selectedLetter}-${currentTrial.correctGroupId}`
     const timer = window.setTimeout(() => {
       if (isReady && lastAutoPlayedTrialId.current !== trialId) {
-        play(groupId)
+        play(soundKey)
         lastAutoPlayedTrialId.current = trialId
       }
       setIsLocked(false)
     }, AUTO_PLAY_DELAY_MS)
     return () => window.clearTimeout(timer)
-  }, [currentTrial, isReady, play])
+  }, [currentTrial, isReady, play, selectedLetter])
 
   // Clear any pending auto-advance / fade timers on unmount, so no state is
   // set after unmount.
@@ -131,6 +139,11 @@ function StagePlayer() {
     const isCorrect = groupId === currentTrial.correctGroupId
     const answerIndex = currentIndex
 
+    // Audio feedback: play the sound of the tapped letter+niqqud (keyed by the
+    // selected letter and the option's sound-group, e.g. 'ב-a') so the child
+    // hears what they picked — whether right or wrong.
+    play(`${selectedLetter}-${groupId}`)
+
     setAnswers((prev) => {
       const next = [...prev]
       next[answerIndex] = { selectedGroupId: groupId, isCorrect }
@@ -153,6 +166,20 @@ function StagePlayer() {
     }
   }
 
+  // Leaving the drill is gated by an icon-only confirmation so a child can't
+  // exit to the menu by accident. Opening it also cancels any pending
+  // auto-advance so the drill doesn't move on behind the dialog.
+  const handleLeaveRequest = () => {
+    cancelAutoAdvance()
+    setShowLeaveConfirm(true)
+  }
+  const handleLeaveConfirm = () => {
+    navigate('/')
+  }
+  const handleLeaveCancel = () => {
+    setShowLeaveConfirm(false)
+  }
+
   if (!stage || !currentTrial) {
     return <div className="stage-player">טוען...</div>
   }
@@ -161,13 +188,60 @@ function StagePlayer() {
   // Minimal-text UI: show the stage as a numeric corner badge (e.g. "stage-1"
   // -> "1") instead of a Hebrew "שלב" label — pre-literate, icon/number only.
   const stageNumber = stage.id.replace(/\D/g, '') || stage.id
+  // Mini niqqud reminders shown next to the stage number: tap to re-hear a
+  // niqqud's name if the child forgets it mid-drill (same set as the Home gate).
+  const levelGraphemes = getStageGraphemes(stage)
 
   return (
     <div className="stage-player">
       {isLocked && <div className="lock-overlay" aria-hidden="true" />}
-      <div className="stage-badge" aria-label={`Stage ${stageNumber}`}>
-        {stageNumber}
+      {showLeaveConfirm && (
+        <div className="leave-confirm" role="dialog" aria-label="Leave to menu?">
+          <div className="leave-confirm-card">
+            <div className="leave-confirm-icon" aria-hidden="true">🏠</div>
+            <div className="leave-confirm-actions">
+              <button
+                className="confirm-button confirm-yes"
+                onClick={handleLeaveConfirm}
+                aria-label="Yes, go to menu"
+              >
+                ✓
+              </button>
+              <button
+                className="confirm-button confirm-no"
+                onClick={handleLeaveCancel}
+                aria-label="No, stay"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      <div className="stage-corner">
+        <div className="stage-badge" aria-label={`Stage ${stageNumber}`}>
+          {stageNumber}
+        </div>
+        <div className="niqud-reminder">
+          {levelGraphemes.map((g) => (
+            <button
+              key={g.audioId}
+              className="niqud-reminder-button"
+              onClick={() => play(g.audioId)}
+              aria-label={g.name}
+            >
+              <span className="niqud-glyph">{isolatedNiqud(g)}</span>
+            </button>
+          ))}
+        </div>
       </div>
+      <button
+        className="home-button"
+        onClick={handleLeaveRequest}
+        aria-label="Home"
+      >
+        🏠
+      </button>
       <div className="stage-header">
         <div className="position-indicator">
           <span className="position-count">
@@ -186,13 +260,16 @@ function StagePlayer() {
             </span>
           )}
         </div>
+        <div className="letter-picker-slot">
+          <LetterPicker />
+        </div>
       </div>
 
       <div className={`trial-content${isFadingOut ? ' fading-out' : ''}`}>
         <div className="audio-display">
           <button
             className="play-audio-button"
-            onClick={() => play(currentTrial.correctGroupId)}
+            onClick={() => play(`${selectedLetter}-${currentTrial.correctGroupId}`)}
             aria-label="Play audio"
           >
             🔊
@@ -215,7 +292,7 @@ function StagePlayer() {
                   className={buttonClass}
                   onClick={() => handleOptionSelect(option.groupId)}
                 >
-                  {option.grapheme}
+                  {selectedLetter + option.mark}
                 </button>
               )
             })}

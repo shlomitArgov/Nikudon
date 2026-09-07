@@ -1,4 +1,4 @@
-import { NikudGroupId } from './nikudGroups'
+import { NikudGroupId, getNikudGroup, type NikudGrapheme } from './nikudGroups'
 
 /**
  * Stage configuration
@@ -72,6 +72,17 @@ export function getFirstStage(): Stage {
  */
 export function getStageGroupIds(stage: Stage): NikudGroupId[] {
   return Array.from(new Set([stage.introducedGroupId, ...stage.reviewGroupIds]))
+}
+
+/**
+ * Every individual niqqud grapheme taught in a stage, across all its in-scope
+ * sound-groups. The Home screen shows these as name-buttons the child must tap
+ * (to hear each name) before entering the level.
+ */
+export function getStageGraphemes(stage: Stage): NikudGrapheme[] {
+  return getStageGroupIds(stage).flatMap(
+    (id) => getNikudGroup(id)?.graphemes ?? []
+  )
 }
 
 /**
