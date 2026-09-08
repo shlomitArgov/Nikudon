@@ -1,20 +1,24 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getFirstStage, getStageGraphemes, type Stage } from '../content/stages'
+import {
+  stages,
+  getStageGraphemes,
+  isStageUnlocked,
+  type Stage,
+} from '../content/stages'
 import { isolatedNiqud } from '../content/nikudGroups'
 import { useAudioPlayer, unlockAudio } from '../hooks/useAudioPlayer'
+import { useStageProgress } from '../context/StageProgressContext'
 import LetterPicker from '../components/LetterPicker'
 import './Home.css'
 
 function Home() {
   const navigate = useNavigate()
   const { play } = useAudioPlayer()
+  const { correctCounts } = useStageProgress()
   // In-memory: which niqqud names (audioIds) the child has tapped, per level.
   // Entering a level is gated on having tapped (heard the name of) every one.
   const [tapped, setTapped] = useState<Record<string, Set<string>>>({})
-
-  // Only level 1 is audio-backed for now; more levels appear as content lands.
-  const levels: Stage[] = [getFirstStage()]
 
   const handleNiqudTap = (levelId: string, audioId: string) => {
     // Mark as heard FIRST, so the gate always updates regardless of anything
@@ -43,13 +47,28 @@ function Home() {
         </div>
 
         <div className="level-list">
-          {levels.map((stage) => {
+          {stages.map((stage, index) => {
+            const levelNumber = stage.id.replace(/\D/g, '') || stage.id
+            const unlocked = isStageUnlocked(index, correctCounts)
+
+            if (!unlocked) {
+              return (
+                <div className="level-card locked" key={stage.id}>
+                  <div className="level-badge" aria-label={`Level ${levelNumber}`}>
+                    {levelNumber}
+                  </div>
+                  <div className="level-lock" aria-label="Locked" role="img">
+                    🔒
+                  </div>
+                </div>
+              )
+            }
+
             const graphemes = getStageGraphemes(stage)
             const tappedForLevel = tapped[stage.id] ?? new Set<string>()
             const allTapped = graphemes.every((g) =>
               tappedForLevel.has(g.audioId)
             )
-            const levelNumber = stage.id.replace(/\D/g, '') || stage.id
 
             return (
               <div className="level-card" key={stage.id}>

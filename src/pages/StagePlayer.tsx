@@ -5,6 +5,7 @@ import { type NikudGroupId, isolatedNiqud } from '../content/nikudGroups'
 import { generateTrial, type Trial } from '../engine/stageRunner'
 import { useAudioPlayer } from '../hooks/useAudioPlayer'
 import { useSelectedLetter } from '../context/LetterContext'
+import { useStageProgress } from '../context/StageProgressContext'
 import LetterPicker from '../components/LetterPicker'
 import './StagePlayer.css'
 
@@ -26,6 +27,7 @@ function StagePlayer() {
   const { stageId } = useParams<{ stageId?: string }>()
   const navigate = useNavigate()
   const { selectedLetter } = useSelectedLetter()
+  const { recordCorrect } = useStageProgress()
   const { play, isReady } = useAudioPlayer()
   const [stage] = useState(getStage(stageId || '') || getFirstStage())
   const [trials, setTrials] = useState<Trial[]>([])
@@ -151,6 +153,9 @@ function StagePlayer() {
     })
 
     if (isCorrect) {
+      // Counts toward this stage's unlock threshold (every correct turn, even a
+      // re-answer of a revisited trial — kept simple, no dedup bookkeeping).
+      recordCorrect(stage.id)
       // Lock + gray the screen immediately, hold the green feedback for a beat,
       // then slow-fade out and advance to the next trial (which fades back in).
       // The lock is released once the next page has settled (auto-play effect).

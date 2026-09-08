@@ -61,6 +61,15 @@
   flex-shrink: 0;
 }
 
+.level-card.locked {
+  opacity: 0.55;
+}
+
+.level-lock {
+  font-size: 40px;
+  line-height: 1;
+}
+
 .level-niquds {
   display: flex;
   gap: var(--spacing-md);
