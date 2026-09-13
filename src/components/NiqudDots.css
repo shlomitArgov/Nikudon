@@ -1,0 +1,36 @@
+/* Sizing is contextual: the containing button sets --niqud-dot-size/-gap/
+   -padding (see .niqud-button in Home.css and .niqud-reminder-button in
+   StagePlayer.css) so the same markup/CSS works at both button scales. */
+
+.niqud-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.niqud-dot {
+  width: var(--niqud-dot-size, 14px);
+  height: var(--niqud-dot-size, 14px);
+  border-radius: 50%;
+  background-color: currentColor;
+  flex-shrink: 0;
+}
+
+.niqud-dots-pair,
+.niqud-dots-row {
+  flex-direction: row;
+  gap: var(--niqud-dot-gap, 3px);
+}
+
+.niqud-dots-triangle {
+  flex-direction: column;
+  gap: var(--niqud-dot-gap, 3px);
+}
+
+/* Holam: pinned to the button's top-left corner instead of centred like the
+   rest of the point marks. Requires the button to be position:relative. */
+.niqud-dots-single.niqud-dots-above-left {
+  position: absolute;
+  top: var(--niqud-dot-padding, 10px);
+  left: var(--niqud-dot-padding, 10px);
+}

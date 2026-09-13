@@ -7,6 +7,7 @@ import { useAudioPlayer } from '../hooks/useAudioPlayer'
 import { useSelectedLetter } from '../context/LetterContext'
 import { useStageProgress } from '../context/StageProgressContext'
 import LetterPicker from '../components/LetterPicker'
+import NiqudDots from '../components/NiqudDots'
 import './StagePlayer.css'
 
 // After a correct tap, hold the (locked, grayed) feedback visible this long
@@ -235,8 +236,11 @@ function StagePlayer() {
               onClick={() => play(g.audioId)}
               aria-label={g.name}
             >
-              {g.isAboveMark ? (
-                <span className="niqud-dot-above" aria-hidden="true" />
+              {g.dotCount ? (
+                <NiqudDots
+                  count={g.dotCount}
+                  position={g.isAboveMark ? 'above-left' : 'center'}
+                />
               ) : (
                 <span className="niqud-glyph">{isolatedNiqud(g)}</span>
               )}

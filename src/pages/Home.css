@@ -82,6 +82,10 @@
   position: relative;
   width: 80px;
   height: 80px;
+  /* Sizing for <NiqudDots> (see NiqudDots.css) at this button's scale. */
+  --niqud-dot-size: 14px;
+  --niqud-dot-gap: 3px;
+  --niqud-dot-padding: 10px;
   /* Large so the bare niqqud mark fills most of the button (no letter). The
      em box overflows the button and is clipped by overflow:hidden below. */
   font-size: 110px;
@@ -112,20 +116,6 @@
   transform: translateY(var(--niqud-lift, -0.34em));
 }
 
-/* Holam sits above and to the left of the letter, not centred like the rest
-   of the set. Drawn as a plain CSS dot (not the mark glyph) pinned to the
-   button's top-left corner, sized to match the other marks' dots (e.g.
-   Hiriq) — sidesteps relying on how the font renders a standalone combining
-   mark. Requires the button to be position:relative (true here). */
-.niqud-dot-above {
-  position: absolute;
-  top: var(--niqud-dot-padding, 10px);
-  left: var(--niqud-dot-padding, 10px);
-  width: var(--niqud-dot-size, 14px);
-  height: var(--niqud-dot-size, 14px);
-  border-radius: 50%;
-  background-color: currentColor;
-}
 
 /* Once heard at least once, mark the niqqud with a small check so the child
    can see which ones are still needed to unlock the level. */

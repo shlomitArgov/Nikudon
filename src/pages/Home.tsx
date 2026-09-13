@@ -10,6 +10,7 @@ import { isolatedNiqud } from '../content/nikudGroups'
 import { useAudioPlayer, unlockAudio } from '../hooks/useAudioPlayer'
 import { useStageProgress } from '../context/StageProgressContext'
 import LetterPicker from '../components/LetterPicker'
+import NiqudDots from '../components/NiqudDots'
 import './Home.css'
 
 function Home() {
@@ -86,13 +87,11 @@ function Home() {
                         onClick={() => handleNiqudTap(stage.id, g.audioId)}
                         aria-label={g.name}
                       >
-                        {g.isAboveMark ? (
-                          // Holam sits above the letter, not centred like the
-                          // rest of the set — drawn as a plain dot pinned to
-                          // the top-left corner instead of the mark glyph, so
-                          // its size/position aren't at the mercy of how the
-                          // font renders a standalone combining mark.
-                          <span className="niqud-dot-above" aria-hidden="true" />
+                        {g.dotCount ? (
+                          <NiqudDots
+                            count={g.dotCount}
+                            position={g.isAboveMark ? 'above-left' : 'center'}
+                          />
                         ) : (
                           <span className="niqud-glyph">{isolatedNiqud(g)}</span>
                         )}
