@@ -21,6 +21,11 @@ export interface NikudGrapheme {
   glyph: string // Alef-carrier display glyph, e.g. אַ
   name: string // Hebrew name of the sign
   audioId: string // key for the name-audio clip, e.g. 'patach'
+  // True for marks that sit ABOVE the letter (currently only Holam) rather
+  // than at/below the baseline like the rest of the set. Isolated display
+  // (nbsp carrier) needs a different vertical lift for these, or the mark
+  // renders outside the button's clipped box (CONT-05).
+  isAboveMark?: boolean
 }
 
 export interface NikudGroup {
@@ -58,7 +63,9 @@ export const nikudGroups: NikudGroup[] = [
   {
     id: 'o',
     label: CARRIER + 'ֹ',
-    graphemes: [{ glyph: CARRIER + 'ֹ', name: 'חוֹלָם', audioId: 'holam' }],
+    graphemes: [
+      { glyph: CARRIER + 'ֹ', name: 'חוֹלָם', audioId: 'holam', isAboveMark: true },
+    ],
     exampleSyllables: ['בֹּ', 'חֹ', 'פֹּ', 'קֹ', 'סֹ'],
   },
   {
