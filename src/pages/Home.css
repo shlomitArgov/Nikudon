@@ -112,20 +112,19 @@
   transform: translateY(var(--niqud-lift, -0.34em));
 }
 
-/* Holam sits above and to the left of the letter (not centred like the rest
-   of the set), so instead of the shared centring lift it's pinned to the
-   button's top-left corner. Requires the button to be position:relative
-   (true for .niqud-button and .niqud-reminder-button). The inherited 110px
-   font-size is dropped to a small icon-sized glyph — at the full size the
-   mark's ink sits low within its own (huge) line box, so anchoring that box
-   at "top" still shows the ink near the bottom. */
-.niqud-glyph-above {
+/* Holam sits above and to the left of the letter, not centred like the rest
+   of the set. Drawn as a plain CSS dot (not the mark glyph) pinned to the
+   button's top-left corner, sized to match the other marks' dots (e.g.
+   Hiriq) — sidesteps relying on how the font renders a standalone combining
+   mark. Requires the button to be position:relative (true here). */
+.niqud-dot-above {
   position: absolute;
-  top: var(--niqud-above-top, 8px);
-  left: var(--niqud-above-left, 8px);
-  font-size: var(--niqud-above-size, 32px);
-  line-height: 1;
-  transform: none;
+  top: var(--niqud-dot-padding, 10px);
+  left: var(--niqud-dot-padding, 10px);
+  width: var(--niqud-dot-size, 14px);
+  height: var(--niqud-dot-size, 14px);
+  border-radius: 50%;
+  background-color: currentColor;
 }
 
 /* Once heard at least once, mark the niqqud with a small check so the child

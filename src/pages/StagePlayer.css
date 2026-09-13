@@ -74,14 +74,15 @@
   transform: translateY(var(--niqud-lift, -0.34em));
 }
 
-/* Holam pinned to the top-left corner — see the matching rule in Home.css. */
-.niqud-reminder-button .niqud-glyph-above {
+/* Holam's dot — see the matching rule in Home.css. */
+.niqud-reminder-button .niqud-dot-above {
   position: absolute;
-  top: var(--niqud-above-top-sm, 3px);
-  left: var(--niqud-above-left-sm, 3px);
-  font-size: var(--niqud-above-size-sm, 18px);
-  line-height: 1;
-  transform: none;
+  top: var(--niqud-dot-padding-sm, 4px);
+  left: var(--niqud-dot-padding-sm, 4px);
+  width: var(--niqud-dot-size-sm, 8px);
+  height: var(--niqud-dot-size-sm, 8px);
+  border-radius: 50%;
+  background-color: currentColor;
 }
 
 /* Locks the screen during the auto-advance transition: a translucent gray

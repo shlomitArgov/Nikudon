@@ -235,11 +235,11 @@ function StagePlayer() {
               onClick={() => play(g.audioId)}
               aria-label={g.name}
             >
-              <span
-                className={`niqud-glyph${g.isAboveMark ? ' niqud-glyph-above' : ''}`}
-              >
-                {isolatedNiqud(g)}
-              </span>
+              {g.isAboveMark ? (
+                <span className="niqud-dot-above" aria-hidden="true" />
+              ) : (
+                <span className="niqud-glyph">{isolatedNiqud(g)}</span>
+              )}
             </button>
           ))}
         </div>
