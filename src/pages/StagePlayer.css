@@ -77,8 +77,10 @@
 /* Holam pinned to the top-left corner — see the matching rule in Home.css. */
 .niqud-reminder-button .niqud-glyph-above {
   position: absolute;
-  top: var(--niqud-above-top-sm, 2px);
-  left: var(--niqud-above-left-sm, 2px);
+  top: var(--niqud-above-top-sm, 3px);
+  left: var(--niqud-above-left-sm, 3px);
+  font-size: var(--niqud-above-size-sm, 18px);
+  line-height: 1;
   transform: none;
 }
 

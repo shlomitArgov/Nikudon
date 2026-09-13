@@ -115,11 +115,16 @@
 /* Holam sits above and to the left of the letter (not centred like the rest
    of the set), so instead of the shared centring lift it's pinned to the
    button's top-left corner. Requires the button to be position:relative
-   (true for .niqud-button and .niqud-reminder-button). */
+   (true for .niqud-button and .niqud-reminder-button). The inherited 110px
+   font-size is dropped to a small icon-sized glyph — at the full size the
+   mark's ink sits low within its own (huge) line box, so anchoring that box
+   at "top" still shows the ink near the bottom. */
 .niqud-glyph-above {
   position: absolute;
-  top: var(--niqud-above-top, 6px);
-  left: var(--niqud-above-left, 6px);
+  top: var(--niqud-above-top, 8px);
+  left: var(--niqud-above-left, 8px);
+  font-size: var(--niqud-above-size, 32px);
+  line-height: 1;
   transform: none;
 }
 
