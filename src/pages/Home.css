@@ -112,12 +112,15 @@
   transform: translateY(var(--niqud-lift, -0.34em));
 }
 
-/* Holam sits above the letter rather than at/below the baseline, so it
-   already renders near the top of the box — the default upward lift above
-   pushes it out of the button's overflow:hidden clip entirely (looks like a
-   blank square). Nudge it down toward centre instead. */
+/* Holam sits above and to the left of the letter (not centred like the rest
+   of the set), so instead of the shared centring lift it's pinned to the
+   button's top-left corner. Requires the button to be position:relative
+   (true for .niqud-button and .niqud-reminder-button). */
 .niqud-glyph-above {
-  transform: translateY(var(--niqud-lift-above, 0.2em));
+  position: absolute;
+  top: var(--niqud-above-top, 6px);
+  left: var(--niqud-above-left, 6px);
+  transform: none;
 }
 
 /* Once heard at least once, mark the niqqud with a small check so the child
