@@ -16,8 +16,13 @@
   flex-shrink: 0;
 }
 
+/* .niqud-dots-row (Segol's top pair) needs its own display:flex — it isn't
+   combined with the .niqud-dots base class in markup, so without this its
+   dot children aren't flex items and their width/height are ignored
+   (non-replaced inline elements), collapsing them to invisible. */
 .niqud-dots-pair,
 .niqud-dots-row {
+  display: flex;
   flex-direction: row;
   gap: var(--niqud-dot-gap, 3px);
 }
@@ -27,9 +32,18 @@
   gap: var(--niqud-dot-gap, 3px);
 }
 
-/* Holam: pinned to the button's top-left corner instead of centred like the
-   rest of the point marks. Requires the button to be position:relative. */
-.niqud-dots-single.niqud-dots-above-left {
+/* Below-baseline marks (Hiriq, Tzeire, Segol) sit pinned toward the bottom
+   of the button, centred horizontally — mirrors real below-the-letter
+   placement. Requires the button to be position:relative. */
+.niqud-dots-bottom {
+  position: absolute;
+  bottom: var(--niqud-dot-padding, 10px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Holam sits above the letter instead — pinned to the top-left corner. */
+.niqud-dots-above-left {
   position: absolute;
   top: var(--niqud-dot-padding, 10px);
   left: var(--niqud-dot-padding, 10px);

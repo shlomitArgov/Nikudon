@@ -90,7 +90,7 @@ function Home() {
                         {g.dotCount ? (
                           <NiqudDots
                             count={g.dotCount}
-                            position={g.isAboveMark ? 'above-left' : 'center'}
+                            position={g.isAboveMark ? 'above-left' : 'bottom'}
                           />
                         ) : (
                           <span className="niqud-glyph">{isolatedNiqud(g)}</span>
