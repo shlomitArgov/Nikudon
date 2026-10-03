@@ -3,6 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { getStage, getFirstStage, getStageGraphemes } from '../content/stages'
 import { type NikudGroupId, isolatedNiqud } from '../content/nikudGroups'
 import { generateTrial, type Trial } from '../engine/stageRunner'
+import {
+  applyAnswer,
+  deriveSessionStats,
+  resolveAsSkippedIfUnresolved,
+  wasAlreadyCorrect,
+  type AnswerSlot,
+} from '../engine/answerTracking'
 import { useAudioPlayer } from '../hooks/useAudioPlayer'
 import { useSelectedLetter } from '../context/LetterContext'
 import { useStageProgress } from '../context/StageProgressContext'
@@ -19,12 +26,6 @@ const FADE_DURATION_MS = 800
 // fade in — before auto-playing its sound and releasing the screen lock.
 const AUTO_PLAY_DELAY_MS = 700
 
-interface TrialAnswer {
-  // null means the trial was skipped (navigated past without answering).
-  selectedGroupId: NikudGroupId | null
-  isCorrect: boolean
-}
-
 function StagePlayer() {
   const { stageId } = useParams<{ stageId?: string }>()
   const navigate = useNavigate()
@@ -36,7 +37,7 @@ function StagePlayer() {
   const [stage] = useState(getStage(stageId || '') || getFirstStage())
   const [trials, setTrials] = useState<Trial[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [answers, setAnswers] = useState<Array<TrialAnswer | null>>([])
+  const [answers, setAnswers] = useState<AnswerSlot[]>([])
   const [usedSyllables, setUsedSyllables] = useState<Set<string>>(new Set())
   // True while the current trial is fading out just before an auto-advance.
   const [isFadingOut, setIsFadingOut] = useState(false)
@@ -122,24 +123,12 @@ function StagePlayer() {
   const handleForward = () => {
     cancelAutoAdvance()
 
-    // Leaving a trial behind without ever getting it right still counts
-    // toward the stage's total stat as a skip — whether it was never
-    // touched at all, or tapped wrong and abandoned instead of retried.
-    // Without the second case, a wrong-then-skipped trial stays stored as
-    // {selectedGroupId: wrongId, isCorrect: false} forever, which the X / Y
-    // total formula deliberately excludes (not correct, not a skip) — so it
-    // would silently vanish from "X / Y so far" instead of counting.
-    const existingAnswer = answers[currentIndex]
-    const notYetResolved =
-      !existingAnswer ||
-      (!existingAnswer.isCorrect && existingAnswer.selectedGroupId !== null)
-    if (notYetResolved) {
-      const skippedIndex = currentIndex
-      setAnswers((prev) => {
-        const next = [...prev]
-        next[skippedIndex] = { selectedGroupId: null, isCorrect: false }
-        return next
-      })
+    const { answers: resolvedAnswers, newlySkipped } = resolveAsSkippedIfUnresolved(
+      answers,
+      currentIndex
+    )
+    if (newlySkipped) {
+      setAnswers(resolvedAnswers)
       recordAnswer(stage.id, false)
     }
 
@@ -183,24 +172,20 @@ function StagePlayer() {
     // Was this trial already marked correct before this tap? Re-answering
     // an already-correct trial (e.g. navigating back and tapping it again)
     // must not count a second time toward the unlock gate or "X / Y".
-    const wasAlreadyCorrect = answers[answerIndex]?.isCorrect === true
+    const alreadyCorrect = wasAlreadyCorrect(answers, answerIndex)
 
     // Audio feedback: play the sound of the tapped letter+niqqud (keyed by the
     // selected letter and the option's sound-group, e.g. 'ב-a') so the child
     // hears what they picked — whether right or wrong.
     play(`${selectedLetter}-${groupId}`)
 
-    setAnswers((prev) => {
-      const next = [...prev]
-      next[answerIndex] = { selectedGroupId: groupId, isCorrect }
-      return next
-    })
+    setAnswers(applyAnswer(answers, answerIndex, groupId, currentTrial.correctGroupId))
 
     if (isCorrect) {
       // Counts toward this stage's unlock threshold — once per trial, not
       // once per tap. A wrong tap records nothing (handled above by simply
       // not calling recordAnswer here).
-      if (!wasAlreadyCorrect) {
+      if (!alreadyCorrect) {
         recordAnswer(stage.id, true)
       }
       // Lock + gray the screen immediately, hold the green feedback for a beat,
@@ -238,15 +223,8 @@ function StagePlayer() {
 
   const currentAnswer = answers[currentIndex] ?? null
   // "X / Y" for this visit, derived from the answer history rather than a
-  // separately-incremented counter: one slot per trial, so re-answering a
-  // trial overwrites its slot instead of counting again. A skip
-  // (selectedGroupId null) counts toward the total but not correct; a
-  // wrong-but-not-yet-resolved trial counts toward neither.
-  const answeredSoFar = answers.filter((a): a is TrialAnswer => a !== null)
-  const sessionCorrect = answeredSoFar.filter((a) => a.isCorrect).length
-  const sessionTotal = answeredSoFar.filter(
-    (a) => a.isCorrect || a.selectedGroupId === null
-  ).length
+  // separately-incremented counter — see deriveSessionStats for the rules.
+  const { correct: sessionCorrect, total: sessionTotal } = deriveSessionStats(answers)
   // Minimal-text UI: show the stage as a numeric corner badge (e.g. "stage-1"
   // -> "1") instead of a Hebrew "שלב" label — pre-literate, icon/number only.
   const stageNumber = stage.id.replace(/\D/g, '') || stage.id
