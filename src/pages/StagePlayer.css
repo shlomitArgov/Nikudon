@@ -46,8 +46,13 @@
 }
 
 .niqud-reminder-button {
+  position: relative;
   width: 44px;
   height: 44px;
+  /* Sizing for <NiqudDots> (see NiqudDots.css) at this button's scale. */
+  --niqud-dot-size: 8px;
+  --niqud-dot-gap: 2px;
+  --niqud-dot-padding: 4px;
   border-radius: 12px;
   background-color: rgba(255, 255, 255, 0.85);
   color: var(--color-primary);

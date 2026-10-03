@@ -21,6 +21,18 @@ export interface NikudGrapheme {
   glyph: string // Alef-carrier display glyph, e.g. אַ
   name: string // Hebrew name of the sign
   audioId: string // key for the name-audio clip, e.g. 'patach'
+  // True for marks that sit ABOVE the letter (currently only Holam) rather
+  // than at/below the baseline like the rest of the set. Isolated display
+  // (nbsp carrier) needs a different vertical lift for these, or the mark
+  // renders outside the button's clipped box (CONT-05).
+  isAboveMark?: boolean
+  // For marks that are just N round dots (Hiriq 1, Tzeire 2, Segol 3, Holam
+  // 1 above). Isolated display draws these as plain CSS circles (via
+  // <NiqudDots>) instead of the font's rendering of a standalone combining
+  // mark, which is unpredictably sized/placed with no base letter to attach
+  // to. Marks without a dot pattern (Patach, Kamatz, Kubutz, Shuruk) fall
+  // back to the text glyph.
+  dotCount?: 1 | 2 | 3
 }
 
 export interface NikudGroup {
@@ -44,21 +56,31 @@ export const nikudGroups: NikudGroup[] = [
     id: 'e',
     label: CARRIER + 'ֶ',
     graphemes: [
-      { glyph: CARRIER + 'ֶ', name: 'סֶגּוֹל', audioId: 'segol' },
-      { glyph: CARRIER + 'ֵ', name: 'צֵירֵי', audioId: 'tzeire' },
+      { glyph: CARRIER + 'ֶ', name: 'סֶגּוֹל', audioId: 'segol', dotCount: 3 },
+      { glyph: CARRIER + 'ֵ', name: 'צֵירֵי', audioId: 'tzeire', dotCount: 2 },
     ],
     exampleSyllables: ['בֶּ', 'בֵּ', 'סֶ', 'צֵ', 'פֶּ', 'פֵּ'],
   },
   {
     id: 'i',
     label: CARRIER + 'ִ',
-    graphemes: [{ glyph: CARRIER + 'ִ', name: 'חִירִיק', audioId: 'hiriq' }],
+    graphemes: [
+      { glyph: CARRIER + 'ִ', name: 'חִירִיק', audioId: 'hiriq', dotCount: 1 },
+    ],
     exampleSyllables: ['בִּ', 'חִ', 'פִּ', 'קִ', 'סִ'],
   },
   {
     id: 'o',
     label: CARRIER + 'ֹ',
-    graphemes: [{ glyph: CARRIER + 'ֹ', name: 'חוֹלָם', audioId: 'holam' }],
+    graphemes: [
+      {
+        glyph: CARRIER + 'ֹ',
+        name: 'חוֹלָם',
+        audioId: 'holam',
+        isAboveMark: true,
+        dotCount: 1,
+      },
+    ],
     exampleSyllables: ['בֹּ', 'חֹ', 'פֹּ', 'קֹ', 'סֹ'],
   },
   {

@@ -33,18 +33,14 @@ export const stages: Stage[] = [
   },
   {
     id: 'stage-3',
-    introducedGroupId: 'i', // חִירִיק (the "i" sound)
-    reviewGroupIds: ['a', 'e'], // Review both "a" and "e"
-    miniGameType: 'hearAndTap',
-  },
-  {
-    id: 'stage-4',
     introducedGroupId: 'o', // חוֹלָם (the "o" sound)
+    // "i" (Hiriq) is already taught in stage-1, so it isn't re-introduced here
+    // — a separate stage for it would be redundant.
     reviewGroupIds: ['a', 'e', 'i'], // Review all previous
     miniGameType: 'hearAndTap',
   },
   {
-    id: 'stage-5',
+    id: 'stage-4',
     introducedGroupId: 'u', // קֻבּוּץ/שׁוּרוּק (the "u" sound)
     reviewGroupIds: ['a', 'e', 'i', 'o'], // Review all previous
     miniGameType: 'hearAndTap',
@@ -94,4 +90,26 @@ export function getNextStage(currentStageId: string): Stage | undefined {
     return undefined
   }
   return stages[currentIndex + 1]
+}
+
+/**
+ * Number of correct trials required in a stage before the next stage unlocks.
+ */
+export const TRIALS_TO_UNLOCK_NEXT_STAGE = 20
+
+/**
+ * Whether the stage at `stageIndex` is unlocked, given the cumulative correct
+ * trial count recorded per stage ID. The first stage is always unlocked;
+ * every later stage requires TRIALS_TO_UNLOCK_NEXT_STAGE correct trials in the
+ * immediately preceding stage.
+ */
+export function isStageUnlocked(
+  stageIndex: number,
+  correctCounts: Record<string, number>
+): boolean {
+  if (stageIndex <= 0) {
+    return true
+  }
+  const previousStage = stages[stageIndex - 1]
+  return (correctCounts[previousStage.id] ?? 0) >= TRIALS_TO_UNLOCK_NEXT_STAGE
 }
