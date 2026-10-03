@@ -26,13 +26,19 @@ export interface NikudGrapheme {
   // (nbsp carrier) needs a different vertical lift for these, or the mark
   // renders outside the button's clipped box (CONT-05).
   isAboveMark?: boolean
-  // For marks that are just N round dots (Hiriq 1, Tzeire 2, Segol 3, Holam
-  // 1 above). Isolated display draws these as plain CSS circles (via
-  // <NiqudDots>) instead of the font's rendering of a standalone combining
-  // mark, which is unpredictably sized/placed with no base letter to attach
-  // to. Marks without a dot pattern (Patach, Kamatz, Kubutz, Shuruk) fall
-  // back to the text glyph.
-  dotCount?: 1 | 2 | 3
+  // For marks that are just round dots (Hiriq, Tzeire, Segol, Holam, Kubutz).
+  // Isolated display draws these as plain CSS circles (via <NiqudDots>)
+  // instead of the font's rendering of a standalone combining mark, which is
+  // unpredictably sized/placed (or outright missing, rendering as a blank
+  // "tofu" square) with no base letter to attach to. Marks without a dot
+  // pattern (Patach, Kamatz, Shuruk) fall back to the text glyph.
+  dotPattern?: 'single' | 'pair' | 'triangle' | 'diagonal'
+  // True for graphemes that are a full LETTER (plus its own built-in mark),
+  // not a bare combining mark on the neutral Alef carrier — currently only
+  // Shuruk (Vav + Dagesh, 'וּ'). These render as a normal letter glyph (no
+  // carrier swap, no mark-centering lift — that lift is tuned for tiny
+  // floating marks and visibly displaces a full letter glyph).
+  isLetterGlyph?: boolean
 }
 
 export interface NikudGroup {
@@ -56,8 +62,13 @@ export const nikudGroups: NikudGroup[] = [
     id: 'e',
     label: CARRIER + 'ֶ',
     graphemes: [
-      { glyph: CARRIER + 'ֶ', name: 'סֶגּוֹל', audioId: 'segol', dotCount: 3 },
-      { glyph: CARRIER + 'ֵ', name: 'צֵירֵי', audioId: 'tzeire', dotCount: 2 },
+      {
+        glyph: CARRIER + 'ֶ',
+        name: 'סֶגּוֹל',
+        audioId: 'segol',
+        dotPattern: 'triangle',
+      },
+      { glyph: CARRIER + 'ֵ', name: 'צֵירֵי', audioId: 'tzeire', dotPattern: 'pair' },
     ],
     exampleSyllables: ['בֶּ', 'בֵּ', 'סֶ', 'צֵ', 'פֶּ', 'פֵּ'],
   },
@@ -65,7 +76,12 @@ export const nikudGroups: NikudGroup[] = [
     id: 'i',
     label: CARRIER + 'ִ',
     graphemes: [
-      { glyph: CARRIER + 'ִ', name: 'חִירִיק', audioId: 'hiriq', dotCount: 1 },
+      {
+        glyph: CARRIER + 'ִ',
+        name: 'חִירִיק',
+        audioId: 'hiriq',
+        dotPattern: 'single',
+      },
     ],
     exampleSyllables: ['בִּ', 'חִ', 'פִּ', 'קִ', 'סִ'],
   },
@@ -78,7 +94,7 @@ export const nikudGroups: NikudGroup[] = [
         name: 'חוֹלָם',
         audioId: 'holam',
         isAboveMark: true,
-        dotCount: 1,
+        dotPattern: 'single',
       },
     ],
     exampleSyllables: ['בֹּ', 'חֹ', 'פֹּ', 'קֹ', 'סֹ'],
@@ -87,8 +103,13 @@ export const nikudGroups: NikudGroup[] = [
     id: 'u',
     label: CARRIER + 'ֻ',
     graphemes: [
-      { glyph: CARRIER + 'ֻ', name: 'קֻבּוּץ', audioId: 'kubutz' },
-      { glyph: 'וּ', name: 'שׁוּרוּק', audioId: 'shuruk' },
+      {
+        glyph: CARRIER + 'ֻ',
+        name: 'קֻבּוּץ',
+        audioId: 'kubutz',
+        dotPattern: 'diagonal',
+      },
+      { glyph: 'וּ', name: 'שׁוּרוּק', audioId: 'shuruk', isLetterGlyph: true },
     ],
     exampleSyllables: ['בֻּ', 'בּוּ', 'קֻ', 'קוּ', 'פֻּ', 'פּוּ'],
   },
