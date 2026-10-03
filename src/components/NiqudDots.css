@@ -51,6 +51,16 @@
   transform: translateX(-50%);
 }
 
+/* The diagonal row's rotate(45deg) is applied after layout, so the element's
+   own (unrotated) box — what "bottom" positions — is far smaller than what
+   actually gets painted: a horizontal row rotated 45deg paints well below
+   its own box's bottom edge. The shared bottom padding isn't enough
+   clearance, clipping the lowest dot against the button's overflow:hidden.
+   Double it for this pattern only. */
+.niqud-dots-diagonal.niqud-dots-bottom {
+  bottom: calc(var(--niqud-dot-padding, 10px) * 2);
+}
+
 /* Holam sits above the letter instead — pinned to the top-left corner. */
 .niqud-dots-above-left {
   position: absolute;

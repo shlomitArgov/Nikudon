@@ -9,15 +9,21 @@
 }
 
 /* Top-corner cluster (leading edge in RTL = right): the numeric stage badge
-   plus the mini niqqud reminders sitting next to it. */
+   above the mini niqqud reminders. Column, so a long reminder row (later
+   stages have many graphemes) wraps downward instead of growing wide enough
+   to overlap the centred letter picker or the opposite corner's home
+   button. */
 .stage-corner {
   position: absolute;
   top: var(--spacing-lg);
   inset-inline-start: var(--spacing-lg);
+  /* Keep clear of the home button pinned to the opposite corner. */
+  max-width: calc(100% - 100px);
   z-index: 5;
   display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
 }
 
 /* Numeric stage badge — minimal-text, number-only (replaced the old
@@ -54,9 +60,15 @@
 }
 
 /* Mini niqqud reminders — tap to re-hear a niqqud's name mid-drill. */
+/* Capped to ~4 buttons per row (rather than one generous max-width that lets
+   a 7-grapheme stage reach all the way into the centred letter picker) —
+   wraps onto extra lines once a stage reviews more than a handful of
+   groups, growing down instead of across. */
 .niqud-reminder {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--spacing-sm);
+  max-width: 220px;
 }
 
 .niqud-reminder-button {

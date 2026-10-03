@@ -20,7 +20,8 @@ const FADE_DURATION_MS = 800
 const AUTO_PLAY_DELAY_MS = 700
 
 interface TrialAnswer {
-  selectedGroupId: NikudGroupId
+  // null means the trial was skipped (navigated past without answering).
+  selectedGroupId: NikudGroupId | null
   isCorrect: boolean
 }
 
@@ -114,6 +115,19 @@ function StagePlayer() {
 
   const handleForward = () => {
     cancelAutoAdvance()
+
+    // Leaving a trial behind without ever answering it still counts toward
+    // the stage's total-attempts stat (as a non-success) — otherwise
+    // skipping a question silently vanishes from "X / Y so far".
+    if (!answers[currentIndex]) {
+      const skippedIndex = currentIndex
+      setAnswers((prev) => {
+        const next = [...prev]
+        next[skippedIndex] = { selectedGroupId: null, isCorrect: false }
+        return next
+      })
+      recordAnswer(stage.id, false)
+    }
 
     if (currentIndex < trials.length - 1) {
       setCurrentIndex((prev) => prev + 1)
@@ -230,12 +244,6 @@ function StagePlayer() {
         <div className="stage-badge" aria-label={`Stage ${stageNumber}`}>
           {stageNumber}
         </div>
-        <div
-          className="stage-progress"
-          aria-label={`${correctCounts[stage.id] ?? 0} correct out of ${totalCounts[stage.id] ?? 0}`}
-        >
-          {correctCounts[stage.id] ?? 0} / {totalCounts[stage.id] ?? 0}
-        </div>
         <div className="niqud-reminder">
           {levelGraphemes.map((g) => (
             <button
@@ -272,7 +280,13 @@ function StagePlayer() {
           <span className="position-count">
             {currentIndex + 1} / {trials.length}
           </span>
-          {currentAnswer && (
+          <span
+            className="stage-progress"
+            aria-label={`${correctCounts[stage.id] ?? 0} correct out of ${totalCounts[stage.id] ?? 0}`}
+          >
+            {correctCounts[stage.id] ?? 0} / {totalCounts[stage.id] ?? 0}
+          </span>
+          {currentAnswer && currentAnswer.selectedGroupId !== null && (
             <span
               className={
                 currentAnswer.isCorrect
