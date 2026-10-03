@@ -303,18 +303,25 @@ function StagePlayer() {
           >
             {sessionCorrect} / {sessionTotal}
           </span>
-          {currentAnswer && currentAnswer.selectedGroupId !== null && (
-            <span
-              className={
-                currentAnswer.isCorrect
-                  ? 'position-status status-correct'
-                  : 'position-status status-incorrect'
-              }
-              aria-hidden="true"
-            >
-              {currentAnswer.isCorrect ? '✓' : '✕'}
-            </span>
-          )}
+          {currentAnswer &&
+            (currentAnswer.selectedGroupId !== null ? (
+              <span
+                className={
+                  currentAnswer.isCorrect
+                    ? 'position-status status-correct'
+                    : 'position-status status-incorrect'
+                }
+                aria-hidden="true"
+              >
+                {currentAnswer.isCorrect ? '✓' : '✕'}
+              </span>
+            ) : (
+              // Skipped — visited and moved past without answering, distinct
+              // from a trial not yet reached at all (no icon at all).
+              <span className="position-status status-skipped" aria-hidden="true">
+                ⤼
+              </span>
+            ))}
         </div>
         <div className="letter-picker-slot">
           <LetterPicker />
@@ -340,6 +347,14 @@ function StagePlayer() {
               let buttonClass = 'option-button'
               if (isSelectedAnswer) {
                 buttonClass += currentAnswer!.isCorrect ? ' correct' : ' incorrect'
+              } else if (
+                currentAnswer?.selectedGroupId === null &&
+                option.groupId === currentTrial.correctGroupId
+              ) {
+                // Skipped (no selection made) — reveal which option was
+                // correct, visually distinct from "you picked this and
+                // got it right".
+                buttonClass += ' correct-reveal'
               }
 
               return (

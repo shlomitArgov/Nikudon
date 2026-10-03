@@ -232,6 +232,10 @@
   color: var(--color-error);
 }
 
+.status-skipped {
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .trial-content {
   max-width: 800px;
   margin: 0 auto;
@@ -332,6 +336,32 @@
   background-color: var(--color-success);
   color: white;
   font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Revealed on a skipped trial (no selection was made): marks which option
+   was correct without implying it was picked — an outline, not the solid
+   fill used for "you selected this and got it right". */
+.option-button.correct-reveal {
+  border: 3px solid var(--color-success);
+}
+
+.option-button.correct-reveal::after {
+  content: '✓';
+  position: absolute;
+  top: -10px;
+  inset-inline-end: -10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: white;
+  color: var(--color-success);
+  border: 2px solid var(--color-success);
+  font-size: 18px;
   font-weight: 700;
   display: flex;
   align-items: center;
