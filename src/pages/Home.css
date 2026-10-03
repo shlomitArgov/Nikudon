@@ -30,18 +30,27 @@
   align-items: center;
 }
 
-/* One level: number badge + its niqqud-name buttons + a gated enter button. */
+/* One level, stacked: number badge + niqqud-name buttons, then a gated enter
+   button below, then a running correct-answer count. */
 .level-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  background-color: rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  width: 100%;
+}
+
+/* Badge + niqqud row sits above the enter button. */
+.level-top {
   direction: rtl;
   display: flex;
   align-items: center;
   gap: var(--spacing-lg);
   flex-wrap: wrap;
   justify-content: center;
-  background-color: rgba(255, 255, 255, 0.12);
-  border-radius: 24px;
-  padding: var(--spacing-lg) var(--spacing-xl);
-  width: 100%;
 }
 
 .level-badge {
@@ -195,6 +204,19 @@
     transform: scale(1.06);
     box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
   }
+}
+
+/* Running correct-answer count for the level, toward the next stage's
+   TRIALS_TO_UNLOCK_NEXT_STAGE threshold. direction:ltr pins "X / Y" in
+   reading order — plain digits/slash have no strong directionality of their
+   own, so inside the page's RTL context the bidi algorithm reorders them
+   (e.g. "0 / 20" renders as "20 / 0") without an explicit LTR override. */
+.level-progress {
+  direction: ltr;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 18px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .play-icon {

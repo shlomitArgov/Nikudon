@@ -4,6 +4,7 @@ import {
   stages,
   getStageGraphemes,
   isStageUnlocked,
+  TRIALS_TO_UNLOCK_NEXT_STAGE,
   type Stage,
 } from '../content/stages'
 import { isolatedNiqud } from '../content/nikudGroups'
@@ -70,38 +71,41 @@ function Home() {
             const allTapped = graphemes.every((g) =>
               tappedForLevel.has(g.audioId)
             )
+            const correctCount = correctCounts[stage.id] ?? 0
 
             return (
               <div className="level-card" key={stage.id}>
-                <div className="level-badge" aria-label={`Level ${levelNumber}`}>
-                  {levelNumber}
-                </div>
+                <div className="level-top">
+                  <div className="level-badge" aria-label={`Level ${levelNumber}`}>
+                    {levelNumber}
+                  </div>
 
-                <div className="level-niquds">
-                  {graphemes.map((g) => {
-                    const isTapped = tappedForLevel.has(g.audioId)
-                    return (
-                      <button
-                        key={g.audioId}
-                        className={`niqud-button${isTapped ? ' tapped' : ''}`}
-                        onClick={() => handleNiqudTap(stage.id, g.audioId)}
-                        aria-label={g.name}
-                      >
-                        {g.dotPattern ? (
-                          <NiqudDots
-                            pattern={g.dotPattern}
-                            position={g.isAboveMark ? 'above-left' : 'bottom'}
-                          />
-                        ) : g.isLetterGlyph ? (
-                          <span className="niqud-glyph niqud-glyph-letter">
-                            {isolatedNiqud(g)}
-                          </span>
-                        ) : (
-                          <span className="niqud-glyph">{isolatedNiqud(g)}</span>
-                        )}
-                      </button>
-                    )
-                  })}
+                  <div className="level-niquds">
+                    {graphemes.map((g) => {
+                      const isTapped = tappedForLevel.has(g.audioId)
+                      return (
+                        <button
+                          key={g.audioId}
+                          className={`niqud-button${isTapped ? ' tapped' : ''}`}
+                          onClick={() => handleNiqudTap(stage.id, g.audioId)}
+                          aria-label={g.name}
+                        >
+                          {g.dotPattern ? (
+                            <NiqudDots
+                              pattern={g.dotPattern}
+                              position={g.isAboveMark ? 'above-left' : 'bottom'}
+                            />
+                          ) : g.isLetterGlyph ? (
+                            <span className="niqud-glyph niqud-glyph-letter">
+                              {isolatedNiqud(g)}
+                            </span>
+                          ) : (
+                            <span className="niqud-glyph">{isolatedNiqud(g)}</span>
+                          )}
+                        </button>
+                      )
+                    })}
+                  </div>
                 </div>
 
                 <button
@@ -114,6 +118,10 @@ function Home() {
                     <path d="M8 5v14l11-7z" />
                   </svg>
                 </button>
+
+                <div className="level-progress" aria-label={`${correctCount} correct answers`}>
+                  {correctCount} / {TRIALS_TO_UNLOCK_NEXT_STAGE}
+                </div>
               </div>
             )
           })}
