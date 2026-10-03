@@ -147,6 +147,17 @@ function StagePlayer() {
     setCurrentIndex(trials.length)
   }
 
+  // The auto-advance timeout chain below calls handleForward well after the
+  // render that scheduled it — by then `answers`/`currentIndex` have moved
+  // on, but a closure captured at schedule-time would still see the OLD
+  // values (a correct answer looking un-answered, wrongly re-marked as
+  // skipped). Keeping a ref to the latest handleForward and calling that
+  // from the timeout instead means it always reads current state.
+  const handleForwardRef = useRef(handleForward)
+  useEffect(() => {
+    handleForwardRef.current = handleForward
+  })
+
   const handleBack = () => {
     cancelAutoAdvance()
     if (currentIndex > 0) {
@@ -193,7 +204,7 @@ function StagePlayer() {
         setIsFadingOut(true)
         fadeTimer.current = window.setTimeout(() => {
           fadeTimer.current = null
-          handleForward()
+          handleForwardRef.current()
         }, FADE_DURATION_MS)
       }, AUTO_ADVANCE_DELAY_MS)
     }
