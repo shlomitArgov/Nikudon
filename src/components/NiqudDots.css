@@ -32,6 +32,15 @@
   gap: var(--niqud-dot-gap, 3px);
 }
 
+/* Kubutz: 3 dots in a diagonal line. A plain horizontal row, tilted — much
+   simpler than hand-staggering each dot's offset. */
+.niqud-dots-diagonal-row {
+  display: flex;
+  flex-direction: row;
+  gap: var(--niqud-dot-gap, 3px);
+  transform: rotate(-45deg);
+}
+
 /* Below-baseline marks (Hiriq, Tzeire, Segol) sit pinned toward the bottom
    of the button, centred horizontally — mirrors real below-the-letter
    placement. Requires the button to be position:relative. */

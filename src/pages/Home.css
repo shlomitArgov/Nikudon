@@ -86,6 +86,8 @@
   --niqud-dot-size: 14px;
   --niqud-dot-gap: 3px;
   --niqud-dot-padding: 10px;
+  /* Font size for a full-letter grapheme (Shuruk) — see .niqud-glyph-letter. */
+  --niqud-letter-size: 56px;
   /* Large so the bare niqqud mark fills most of the button (no letter). The
      em box overflows the button and is clipped by overflow:hidden below. */
   font-size: 110px;
@@ -114,6 +116,15 @@
   display: block;
   line-height: 1;
   transform: translateY(var(--niqud-lift, -0.34em));
+}
+
+/* Shuruk is a full letter glyph (Vav + its own built-in dot), not a tiny
+   floating mark — the mark-centring lift above was designed for marks and
+   visibly displaced the letter. Render at letter scale, flex-centred,
+   with no lift. */
+.niqud-glyph-letter {
+  font-size: var(--niqud-letter-size, 56px);
+  transform: none;
 }
 
 
