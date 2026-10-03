@@ -38,7 +38,7 @@
   display: flex;
   flex-direction: row;
   gap: var(--niqud-dot-gap, 3px);
-  transform: rotate(-45deg);
+  transform: rotate(45deg);
 }
 
 /* Below-baseline marks (Hiriq, Tzeire, Segol) sit pinned toward the bottom

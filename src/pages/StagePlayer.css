@@ -54,7 +54,7 @@
   --niqud-dot-gap: 2px;
   --niqud-dot-padding: 4px;
   /* Font size for a full-letter grapheme (Shuruk) — see .niqud-glyph-letter. */
-  --niqud-letter-size: 30px;
+  --niqud-letter-size: 48px;
   border-radius: 12px;
   background-color: rgba(255, 255, 255, 0.85);
   color: var(--color-primary);
@@ -82,7 +82,7 @@
 
 /* Shuruk is a full letter glyph — see the matching rule in Home.css. */
 .niqud-reminder-button .niqud-glyph-letter {
-  font-size: var(--niqud-letter-size, 30px);
+  font-size: var(--niqud-letter-size, 48px);
   transform: none;
 }
 

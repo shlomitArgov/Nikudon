@@ -87,7 +87,7 @@
   --niqud-dot-gap: 3px;
   --niqud-dot-padding: 10px;
   /* Font size for a full-letter grapheme (Shuruk) — see .niqud-glyph-letter. */
-  --niqud-letter-size: 56px;
+  --niqud-letter-size: 90px;
   /* Large so the bare niqqud mark fills most of the button (no letter). The
      em box overflows the button and is clipped by overflow:hidden below. */
   font-size: 110px;
@@ -123,7 +123,7 @@
    visibly displaced the letter. Render at letter scale, flex-centred,
    with no lift. */
 .niqud-glyph-letter {
-  font-size: var(--niqud-letter-size, 56px);
+  font-size: var(--niqud-letter-size, 90px);
   transform: none;
 }
 
