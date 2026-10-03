@@ -42,11 +42,34 @@ function Home() {
             const levelNumber = stage.id.replace(/\D/g, '') || stage.id
             const unlocked = isStageUnlocked(index, correctCounts)
 
+            const graphemes = getStageGraphemes(stage)
+
+            const niqudGlyph = (g: (typeof graphemes)[number]) =>
+              g.dotPattern ? (
+                <NiqudDots
+                  pattern={g.dotPattern}
+                  position={g.isAboveMark ? 'above-left' : 'bottom'}
+                />
+              ) : g.isLetterGlyph ? (
+                <span className="niqud-glyph niqud-glyph-letter">
+                  {isolatedNiqud(g)}
+                </span>
+              ) : (
+                <span className="niqud-glyph">{isolatedNiqud(g)}</span>
+              )
+
             if (!unlocked) {
               return (
                 <div className="level-card locked" key={stage.id}>
                   <div className="level-badge" aria-label={`Level ${levelNumber}`}>
                     {levelNumber}
+                  </div>
+                  <div className="level-niquds">
+                    {graphemes.map((g) => (
+                      <div key={g.audioId} className="niqud-button" aria-hidden="true">
+                        {niqudGlyph(g)}
+                      </div>
+                    ))}
                   </div>
                   <div className="level-lock" aria-label="Locked" role="img">
                     🔒
@@ -55,7 +78,6 @@ function Home() {
               )
             }
 
-            const graphemes = getStageGraphemes(stage)
             const tappedForLevel = tapped[stage.id] ?? new Set<string>()
             const allTapped = graphemes.every((g) =>
               tappedForLevel.has(g.audioId)
@@ -76,18 +98,7 @@ function Home() {
                         onClick={() => handleNiqudTap(stage.id, g.audioId)}
                         aria-label={g.name}
                       >
-                        {g.dotPattern ? (
-                          <NiqudDots
-                            pattern={g.dotPattern}
-                            position={g.isAboveMark ? 'above-left' : 'bottom'}
-                          />
-                        ) : g.isLetterGlyph ? (
-                          <span className="niqud-glyph niqud-glyph-letter">
-                            {isolatedNiqud(g)}
-                          </span>
-                        ) : (
-                          <span className="niqud-glyph">{isolatedNiqud(g)}</span>
-                        )}
+                        {niqudGlyph(g)}
                       </button>
                     )
                   })}
