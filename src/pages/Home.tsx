@@ -9,7 +9,6 @@ import {
 import { isolatedNiqud } from '../content/nikudGroups'
 import { useAudioPlayer, unlockAudio } from '../hooks/useAudioPlayer'
 import { useStageProgress } from '../context/StageProgressContext'
-import LetterPicker from '../components/LetterPicker'
 import NiqudDots from '../components/NiqudDots'
 import './Home.css'
 
@@ -42,10 +41,6 @@ function Home() {
     <div className="home">
       <div className="home-content">
         <h1 className="home-title">ניקודון</h1>
-
-        <div className="letter-picker-slot">
-          <LetterPicker />
-        </div>
 
         <div className="level-list">
           {stages.map((stage, index) => {
