@@ -1,12 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  stages,
-  getStageGraphemes,
-  isStageUnlocked,
-  TRIALS_TO_UNLOCK_NEXT_STAGE,
-  type Stage,
-} from '../content/stages'
+import { stages, getStageGraphemes, isStageUnlocked, type Stage } from '../content/stages'
 import { isolatedNiqud } from '../content/nikudGroups'
 import { useAudioPlayer, unlockAudio } from '../hooks/useAudioPlayer'
 import { useStageProgress } from '../context/StageProgressContext'
@@ -71,8 +65,6 @@ function Home() {
             const allTapped = graphemes.every((g) =>
               tappedForLevel.has(g.audioId)
             )
-            const correctCount = correctCounts[stage.id] ?? 0
-
             return (
               <div className="level-card" key={stage.id}>
                 <div className="level-badge" aria-label={`Level ${levelNumber}`}>
@@ -116,10 +108,6 @@ function Home() {
                     <path d="M8 5v14l11-7z" />
                   </svg>
                 </button>
-
-                <div className="level-progress" aria-label={`${correctCount} correct answers`}>
-                  {correctCount} / {TRIALS_TO_UNLOCK_NEXT_STAGE}
-                </div>
               </div>
             )
           })}

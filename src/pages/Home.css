@@ -196,19 +196,6 @@
   }
 }
 
-/* Running correct-answer count for the level, toward the next stage's
-   TRIALS_TO_UNLOCK_NEXT_STAGE threshold. direction:ltr pins "X / Y" in
-   reading order — plain digits/slash have no strong directionality of their
-   own, so inside the page's RTL context the bidi algorithm reorders them
-   (e.g. "0 / 20" renders as "20 / 0") without an explicit LTR override. */
-.level-progress {
-  direction: ltr;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 18px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
 .play-icon {
   width: 44px;
   height: 44px;

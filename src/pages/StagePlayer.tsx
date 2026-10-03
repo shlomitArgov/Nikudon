@@ -28,7 +28,7 @@ function StagePlayer() {
   const { stageId } = useParams<{ stageId?: string }>()
   const navigate = useNavigate()
   const { selectedLetter } = useSelectedLetter()
-  const { recordCorrect } = useStageProgress()
+  const { correctCounts, totalCounts, recordAnswer } = useStageProgress()
   const { play, isReady } = useAudioPlayer()
   const [stage] = useState(getStage(stageId || '') || getFirstStage())
   const [trials, setTrials] = useState<Trial[]>([])
@@ -153,10 +153,12 @@ function StagePlayer() {
       return next
     })
 
+    // Counts toward this stage's unlock threshold and the "X / Y so far"
+    // display — every answered turn, even a re-answer of a revisited trial
+    // (kept simple, no dedup bookkeeping).
+    recordAnswer(stage.id, isCorrect)
+
     if (isCorrect) {
-      // Counts toward this stage's unlock threshold (every correct turn, even a
-      // re-answer of a revisited trial — kept simple, no dedup bookkeeping).
-      recordCorrect(stage.id)
       // Lock + gray the screen immediately, hold the green feedback for a beat,
       // then slow-fade out and advance to the next trial (which fades back in).
       // The lock is released once the next page has settled (auto-play effect).
@@ -227,6 +229,12 @@ function StagePlayer() {
       <div className="stage-corner">
         <div className="stage-badge" aria-label={`Stage ${stageNumber}`}>
           {stageNumber}
+        </div>
+        <div
+          className="stage-progress"
+          aria-label={`${correctCounts[stage.id] ?? 0} correct out of ${totalCounts[stage.id] ?? 0}`}
+        >
+          {correctCounts[stage.id] ?? 0} / {totalCounts[stage.id] ?? 0}
         </div>
         <div className="niqud-reminder">
           {levelGraphemes.map((g) => (

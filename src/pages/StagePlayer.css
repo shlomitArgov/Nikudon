@@ -39,6 +39,20 @@
   flex-shrink: 0;
 }
 
+/* Running correct/total answer count for this stage. direction:ltr pins
+   "X / Y" in reading order — plain digits/slash have no strong
+   directionality of their own, so inside the page's RTL context the bidi
+   algorithm would otherwise reorder them (e.g. "0 / 0" -> "0 / 0" is
+   invisible, but "3 / 5" would render as "5 / 3"). */
+.stage-progress {
+  direction: ltr;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
 /* Mini niqqud reminders — tap to re-hear a niqqud's name mid-drill. */
 .niqud-reminder {
   display: flex;
