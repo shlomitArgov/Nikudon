@@ -119,22 +119,27 @@ function StagePlayer() {
     setIsLocked(false)
   }
 
-  // Updates both the lifetime unlock-gate stats (persisted) and this
-  // visit's on-screen "X / Y" tally (plain state, resets on remount).
-  const recordAttempt = (isCorrect: boolean) => {
-    recordAnswer(stage.id, isCorrect)
+  // Updates both the lifetime unlock-gate stats (persisted) and this visit's
+  // on-screen "X / Y" tally (plain state, resets on remount). A wrong tap
+  // records nothing at all — only successes and skips move the total, so
+  // the stat reads as "questions cleared", not a penalized attempt count.
+  const recordSuccess = () => {
+    recordAnswer(stage.id, true)
     setSessionTotal((prev) => prev + 1)
-    if (isCorrect) {
-      setSessionCorrect((prev) => prev + 1)
-    }
+    setSessionCorrect((prev) => prev + 1)
+  }
+
+  const recordSkip = () => {
+    recordAnswer(stage.id, false)
+    setSessionTotal((prev) => prev + 1)
   }
 
   const handleForward = () => {
     cancelAutoAdvance()
 
     // Leaving a trial behind without ever answering it still counts toward
-    // the stage's total-attempts stat (as a non-success) — otherwise
-    // skipping a question silently vanishes from "X / Y so far".
+    // the stage's total stat — otherwise skipping a question silently
+    // vanishes from "X / Y so far".
     if (!answers[currentIndex]) {
       const skippedIndex = currentIndex
       setAnswers((prev) => {
@@ -142,7 +147,7 @@ function StagePlayer() {
         next[skippedIndex] = { selectedGroupId: null, isCorrect: false }
         return next
       })
-      recordAttempt(false)
+      recordSkip()
     }
 
     if (currentIndex < trials.length - 1) {
@@ -183,12 +188,11 @@ function StagePlayer() {
       return next
     })
 
-    // Counts toward this stage's unlock threshold and the "X / Y so far"
-    // display — every answered turn, even a re-answer of a revisited trial
-    // (kept simple, no dedup bookkeeping).
-    recordAttempt(isCorrect)
-
     if (isCorrect) {
+      // Counts toward this stage's unlock threshold and the "X / Y so far"
+      // display — every correct turn, even a re-answer of a revisited trial
+      // (kept simple, no dedup bookkeeping). A wrong tap records nothing.
+      recordSuccess()
       // Lock + gray the screen immediately, hold the green feedback for a beat,
       // then slow-fade out and advance to the next trial (which fades back in).
       // The lock is released once the next page has settled (auto-play effect).
