@@ -30,8 +30,8 @@
   align-items: center;
 }
 
-/* One level, stacked: number badge + niqqud-name buttons, then a gated enter
-   button below, then a running correct-answer count. */
+/* One level, stacked: number badge above everything, then the niqqud-name
+   buttons, then a gated enter button, then a running correct-answer count. */
 .level-card {
   display: flex;
   flex-direction: column;
@@ -41,16 +41,6 @@
   border-radius: 24px;
   padding: var(--spacing-lg) var(--spacing-xl);
   width: 100%;
-}
-
-/* Badge + niqqud row sits above the enter button. */
-.level-top {
-  direction: rtl;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-lg);
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
 .level-badge {

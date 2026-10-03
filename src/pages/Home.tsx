@@ -75,37 +75,35 @@ function Home() {
 
             return (
               <div className="level-card" key={stage.id}>
-                <div className="level-top">
-                  <div className="level-badge" aria-label={`Level ${levelNumber}`}>
-                    {levelNumber}
-                  </div>
+                <div className="level-badge" aria-label={`Level ${levelNumber}`}>
+                  {levelNumber}
+                </div>
 
-                  <div className="level-niquds">
-                    {graphemes.map((g) => {
-                      const isTapped = tappedForLevel.has(g.audioId)
-                      return (
-                        <button
-                          key={g.audioId}
-                          className={`niqud-button${isTapped ? ' tapped' : ''}`}
-                          onClick={() => handleNiqudTap(stage.id, g.audioId)}
-                          aria-label={g.name}
-                        >
-                          {g.dotPattern ? (
-                            <NiqudDots
-                              pattern={g.dotPattern}
-                              position={g.isAboveMark ? 'above-left' : 'bottom'}
-                            />
-                          ) : g.isLetterGlyph ? (
-                            <span className="niqud-glyph niqud-glyph-letter">
-                              {isolatedNiqud(g)}
-                            </span>
-                          ) : (
-                            <span className="niqud-glyph">{isolatedNiqud(g)}</span>
-                          )}
-                        </button>
-                      )
-                    })}
-                  </div>
+                <div className="level-niquds">
+                  {graphemes.map((g) => {
+                    const isTapped = tappedForLevel.has(g.audioId)
+                    return (
+                      <button
+                        key={g.audioId}
+                        className={`niqud-button${isTapped ? ' tapped' : ''}`}
+                        onClick={() => handleNiqudTap(stage.id, g.audioId)}
+                        aria-label={g.name}
+                      >
+                        {g.dotPattern ? (
+                          <NiqudDots
+                            pattern={g.dotPattern}
+                            position={g.isAboveMark ? 'above-left' : 'bottom'}
+                          />
+                        ) : g.isLetterGlyph ? (
+                          <span className="niqud-glyph niqud-glyph-letter">
+                            {isolatedNiqud(g)}
+                          </span>
+                        ) : (
+                          <span className="niqud-glyph">{isolatedNiqud(g)}</span>
+                        )}
+                      </button>
+                    )
+                  })}
                 </div>
 
                 <button
