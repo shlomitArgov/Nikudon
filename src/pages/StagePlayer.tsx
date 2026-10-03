@@ -359,14 +359,6 @@ function StagePlayer() {
               let buttonClass = 'option-button'
               if (isSelectedAnswer) {
                 buttonClass += currentAnswer!.isCorrect ? ' correct' : ' incorrect'
-              } else if (
-                currentAnswer?.selectedGroupId === null &&
-                option.groupId === currentTrial.correctGroupId
-              ) {
-                // Skipped (no selection made) — reveal which option was
-                // correct, visually distinct from "you picked this and
-                // got it right".
-                buttonClass += ' correct-reveal'
               }
 
               return (
