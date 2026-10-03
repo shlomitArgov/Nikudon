@@ -218,13 +218,6 @@
   opacity: 0.9;
 }
 
-/* direction:ltr pins "X / Y" in reading order — see the matching note on
-   .level-progress in Home.css. */
-.position-count {
-  direction: ltr;
-  font-variant-numeric: tabular-nums;
-}
-
 .position-status {
   font-size: 24px;
   font-weight: 700;

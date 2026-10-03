@@ -277,9 +277,6 @@ function StagePlayer() {
       </button>
       <div className="stage-header">
         <div className="position-indicator">
-          <span className="position-count">
-            {currentIndex + 1} / {trials.length}
-          </span>
           <span
             className="stage-progress"
             aria-label={`${correctCounts[stage.id] ?? 0} correct out of ${totalCounts[stage.id] ?? 0}`}
