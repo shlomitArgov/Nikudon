@@ -122,10 +122,18 @@ function StagePlayer() {
   const handleForward = () => {
     cancelAutoAdvance()
 
-    // Leaving a trial behind without ever answering it still counts toward
-    // the stage's total stat — otherwise skipping a question silently
-    // vanishes from "X / Y so far".
-    if (!answers[currentIndex]) {
+    // Leaving a trial behind without ever getting it right still counts
+    // toward the stage's total stat as a skip — whether it was never
+    // touched at all, or tapped wrong and abandoned instead of retried.
+    // Without the second case, a wrong-then-skipped trial stays stored as
+    // {selectedGroupId: wrongId, isCorrect: false} forever, which the X / Y
+    // total formula deliberately excludes (not correct, not a skip) — so it
+    // would silently vanish from "X / Y so far" instead of counting.
+    const existingAnswer = answers[currentIndex]
+    const notYetResolved =
+      !existingAnswer ||
+      (!existingAnswer.isCorrect && existingAnswer.selectedGroupId !== null)
+    if (notYetResolved) {
       const skippedIndex = currentIndex
       setAnswers((prev) => {
         const next = [...prev]
