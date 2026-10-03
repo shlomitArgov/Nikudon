@@ -30,14 +30,13 @@
   align-items: center;
 }
 
-/* One level: number badge + its niqqud-name buttons + a gated enter button. */
+/* One level, stacked: number badge above everything, then the niqqud-name
+   buttons, then a gated enter button, then a running correct-answer count. */
 .level-card {
-  direction: rtl;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--spacing-lg);
-  flex-wrap: wrap;
-  justify-content: center;
+  gap: var(--spacing-md);
   background-color: rgba(255, 255, 255, 0.12);
   border-radius: 24px;
   padding: var(--spacing-lg) var(--spacing-xl);
@@ -87,7 +86,7 @@
   --niqud-dot-gap: 3px;
   --niqud-dot-padding: 10px;
   /* Font size for a full-letter grapheme (Shuruk) — see .niqud-glyph-letter. */
-  --niqud-letter-size: 56px;
+  --niqud-letter-size: 90px;
   /* Large so the bare niqqud mark fills most of the button (no letter). The
      em box overflows the button and is clipped by overflow:hidden below. */
   font-size: 110px;
@@ -123,7 +122,7 @@
    visibly displaced the letter. Render at letter scale, flex-centred,
    with no lift. */
 .niqud-glyph-letter {
-  font-size: var(--niqud-letter-size, 56px);
+  font-size: var(--niqud-letter-size, 90px);
   transform: none;
 }
 

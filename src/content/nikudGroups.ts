@@ -89,15 +89,25 @@ export const nikudGroups: NikudGroup[] = [
     id: 'o',
     label: CARRIER + 'ֹ',
     graphemes: [
+      // Cholam Haser ("bare") — the dot alone, composable onto any letter.
       {
         glyph: CARRIER + 'ֹ',
-        name: 'חוֹלָם',
+        name: 'חוֹלָם חָסֵר',
         audioId: 'holam',
         isAboveMark: true,
         dotPattern: 'single',
       },
+      // Cholam Male ("full") — Vav carries the dot itself, like Shuruk (Vav +
+      // Dagesh): a full letter+mark unit, not a bare combining mark on the
+      // Alef carrier, so no CARRIER prefix and isLetterGlyph instead.
+      {
+        glyph: 'וֹ',
+        name: 'חוֹלָם מָלֵא',
+        audioId: 'holammale',
+        isLetterGlyph: true,
+      },
     ],
-    exampleSyllables: ['בֹּ', 'חֹ', 'פֹּ', 'קֹ', 'סֹ'],
+    exampleSyllables: ['בֹּ', 'חֹ', 'פֹּ', 'קֹ', 'סֹ', 'בּוֹ', 'חוֹ', 'סוֹ'],
   },
   {
     id: 'u',

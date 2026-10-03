@@ -9,15 +9,21 @@
 }
 
 /* Top-corner cluster (leading edge in RTL = right): the numeric stage badge
-   plus the mini niqqud reminders sitting next to it. */
+   above the mini niqqud reminders. Column, so a long reminder row (later
+   stages have many graphemes) wraps downward instead of growing wide enough
+   to overlap the centred letter picker or the opposite corner's home
+   button. */
 .stage-corner {
   position: absolute;
   top: var(--spacing-lg);
   inset-inline-start: var(--spacing-lg);
+  /* Keep clear of the home button pinned to the opposite corner. */
+  max-width: calc(100% - 100px);
   z-index: 5;
   display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
 }
 
 /* Numeric stage badge — minimal-text, number-only (replaced the old
@@ -39,10 +45,30 @@
   flex-shrink: 0;
 }
 
+/* Running correct/total answer count for this stage. direction:ltr pins
+   "X / Y" in reading order — plain digits/slash have no strong
+   directionality of their own, so inside the page's RTL context the bidi
+   algorithm would otherwise reorder them (e.g. "0 / 0" -> "0 / 0" is
+   invisible, but "3 / 5" would render as "5 / 3"). */
+.stage-progress {
+  direction: ltr;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
 /* Mini niqqud reminders — tap to re-hear a niqqud's name mid-drill. */
+/* Capped to ~4 buttons per row (rather than one generous max-width that lets
+   a 7-grapheme stage reach all the way into the centred letter picker) —
+   wraps onto extra lines once a stage reviews more than a handful of
+   groups, growing down instead of across. */
 .niqud-reminder {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--spacing-sm);
+  max-width: 220px;
 }
 
 .niqud-reminder-button {
@@ -54,7 +80,7 @@
   --niqud-dot-gap: 2px;
   --niqud-dot-padding: 4px;
   /* Font size for a full-letter grapheme (Shuruk) — see .niqud-glyph-letter. */
-  --niqud-letter-size: 30px;
+  --niqud-letter-size: 48px;
   border-radius: 12px;
   background-color: rgba(255, 255, 255, 0.85);
   color: var(--color-primary);
@@ -82,7 +108,7 @@
 
 /* Shuruk is a full letter glyph — see the matching rule in Home.css. */
 .niqud-reminder-button .niqud-glyph-letter {
-  font-size: var(--niqud-letter-size, 30px);
+  font-size: var(--niqud-letter-size, 48px);
   transform: none;
 }
 
@@ -192,10 +218,6 @@
   opacity: 0.9;
 }
 
-.position-count {
-  font-variant-numeric: tabular-nums;
-}
-
 .position-status {
   font-size: 24px;
   font-weight: 700;
@@ -208,6 +230,10 @@
 
 .status-incorrect {
   color: var(--color-error);
+}
+
+.status-skipped {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .trial-content {
@@ -310,6 +336,32 @@
   background-color: var(--color-success);
   color: white;
   font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Revealed on a skipped trial (no selection was made): marks which option
+   was correct without implying it was picked — an outline, not the solid
+   fill used for "you selected this and got it right". */
+.option-button.correct-reveal {
+  border: 3px solid var(--color-success);
+}
+
+.option-button.correct-reveal::after {
+  content: '✓';
+  position: absolute;
+  top: -10px;
+  inset-inline-end: -10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: white;
+  color: var(--color-success);
+  border: 2px solid var(--color-success);
+  font-size: 18px;
   font-weight: 700;
   display: flex;
   align-items: center;

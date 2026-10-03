@@ -20,7 +20,8 @@ const FADE_DURATION_MS = 800
 const AUTO_PLAY_DELAY_MS = 700
 
 interface TrialAnswer {
-  selectedGroupId: NikudGroupId
+  // null means the trial was skipped (navigated past without answering).
+  selectedGroupId: NikudGroupId | null
   isCorrect: boolean
 }
 
@@ -28,7 +29,9 @@ function StagePlayer() {
   const { stageId } = useParams<{ stageId?: string }>()
   const navigate = useNavigate()
   const { selectedLetter } = useSelectedLetter()
-  const { recordCorrect } = useStageProgress()
+  // recordAnswer persists into the lifetime, cross-session unlock-gate stats
+  // (StageProgressContext/localStorage).
+  const { recordAnswer } = useStageProgress()
   const { play, isReady } = useAudioPlayer()
   const [stage] = useState(getStage(stageId || '') || getFirstStage())
   const [trials, setTrials] = useState<Trial[]>([])
@@ -112,8 +115,25 @@ function StagePlayer() {
     setIsLocked(false)
   }
 
+  // Feeds the lifetime unlock-gate stats (persisted). The on-screen "X / Y"
+  // is derived straight from `answers` below instead — one slot per trial,
+  // so re-answering a trial overwrites its slot rather than counting again.
+
   const handleForward = () => {
     cancelAutoAdvance()
+
+    // Leaving a trial behind without ever answering it still counts toward
+    // the stage's total stat — otherwise skipping a question silently
+    // vanishes from "X / Y so far".
+    if (!answers[currentIndex]) {
+      const skippedIndex = currentIndex
+      setAnswers((prev) => {
+        const next = [...prev]
+        next[skippedIndex] = { selectedGroupId: null, isCorrect: false }
+        return next
+      })
+      recordAnswer(stage.id, false)
+    }
 
     if (currentIndex < trials.length - 1) {
       setCurrentIndex((prev) => prev + 1)
@@ -126,6 +146,17 @@ function StagePlayer() {
     setUsedSyllables((prev) => new Set(prev).add(newTrial.audioSyllable))
     setCurrentIndex(trials.length)
   }
+
+  // The auto-advance timeout chain below calls handleForward well after the
+  // render that scheduled it — by then `answers`/`currentIndex` have moved
+  // on, but a closure captured at schedule-time would still see the OLD
+  // values (a correct answer looking un-answered, wrongly re-marked as
+  // skipped). Keeping a ref to the latest handleForward and calling that
+  // from the timeout instead means it always reads current state.
+  const handleForwardRef = useRef(handleForward)
+  useEffect(() => {
+    handleForwardRef.current = handleForward
+  })
 
   const handleBack = () => {
     cancelAutoAdvance()
@@ -141,6 +172,10 @@ function StagePlayer() {
 
     const isCorrect = groupId === currentTrial.correctGroupId
     const answerIndex = currentIndex
+    // Was this trial already marked correct before this tap? Re-answering
+    // an already-correct trial (e.g. navigating back and tapping it again)
+    // must not count a second time toward the unlock gate or "X / Y".
+    const wasAlreadyCorrect = answers[answerIndex]?.isCorrect === true
 
     // Audio feedback: play the sound of the tapped letter+niqqud (keyed by the
     // selected letter and the option's sound-group, e.g. 'ב-a') so the child
@@ -154,9 +189,12 @@ function StagePlayer() {
     })
 
     if (isCorrect) {
-      // Counts toward this stage's unlock threshold (every correct turn, even a
-      // re-answer of a revisited trial — kept simple, no dedup bookkeeping).
-      recordCorrect(stage.id)
+      // Counts toward this stage's unlock threshold — once per trial, not
+      // once per tap. A wrong tap records nothing (handled above by simply
+      // not calling recordAnswer here).
+      if (!wasAlreadyCorrect) {
+        recordAnswer(stage.id, true)
+      }
       // Lock + gray the screen immediately, hold the green feedback for a beat,
       // then slow-fade out and advance to the next trial (which fades back in).
       // The lock is released once the next page has settled (auto-play effect).
@@ -166,7 +204,7 @@ function StagePlayer() {
         setIsFadingOut(true)
         fadeTimer.current = window.setTimeout(() => {
           fadeTimer.current = null
-          handleForward()
+          handleForwardRef.current()
         }, FADE_DURATION_MS)
       }, AUTO_ADVANCE_DELAY_MS)
     }
@@ -191,6 +229,16 @@ function StagePlayer() {
   }
 
   const currentAnswer = answers[currentIndex] ?? null
+  // "X / Y" for this visit, derived from the answer history rather than a
+  // separately-incremented counter: one slot per trial, so re-answering a
+  // trial overwrites its slot instead of counting again. A skip
+  // (selectedGroupId null) counts toward the total but not correct; a
+  // wrong-but-not-yet-resolved trial counts toward neither.
+  const answeredSoFar = answers.filter((a): a is TrialAnswer => a !== null)
+  const sessionCorrect = answeredSoFar.filter((a) => a.isCorrect).length
+  const sessionTotal = answeredSoFar.filter(
+    (a) => a.isCorrect || a.selectedGroupId === null
+  ).length
   // Minimal-text UI: show the stage as a numeric corner badge (e.g. "stage-1"
   // -> "1") instead of a Hebrew "שלב" label — pre-literate, icon/number only.
   const stageNumber = stage.id.replace(/\D/g, '') || stage.id
@@ -261,21 +309,31 @@ function StagePlayer() {
       </button>
       <div className="stage-header">
         <div className="position-indicator">
-          <span className="position-count">
-            {currentIndex + 1} / {trials.length}
+          <span
+            className="stage-progress"
+            aria-label={`${sessionCorrect} correct out of ${sessionTotal}`}
+          >
+            {sessionCorrect} / {sessionTotal}
           </span>
-          {currentAnswer && (
-            <span
-              className={
-                currentAnswer.isCorrect
-                  ? 'position-status status-correct'
-                  : 'position-status status-incorrect'
-              }
-              aria-hidden="true"
-            >
-              {currentAnswer.isCorrect ? '✓' : '✕'}
-            </span>
-          )}
+          {currentAnswer &&
+            (currentAnswer.selectedGroupId !== null ? (
+              <span
+                className={
+                  currentAnswer.isCorrect
+                    ? 'position-status status-correct'
+                    : 'position-status status-incorrect'
+                }
+                aria-hidden="true"
+              >
+                {currentAnswer.isCorrect ? '✓' : '✕'}
+              </span>
+            ) : (
+              // Skipped — visited and moved past without answering, distinct
+              // from a trial not yet reached at all (no icon at all).
+              <span className="position-status status-skipped" aria-hidden="true">
+                ⤼
+              </span>
+            ))}
         </div>
         <div className="letter-picker-slot">
           <LetterPicker previewGroupId={currentTrial.correctGroupId} />
@@ -301,6 +359,14 @@ function StagePlayer() {
               let buttonClass = 'option-button'
               if (isSelectedAnswer) {
                 buttonClass += currentAnswer!.isCorrect ? ' correct' : ' incorrect'
+              } else if (
+                currentAnswer?.selectedGroupId === null &&
+                option.groupId === currentTrial.correctGroupId
+              ) {
+                // Skipped (no selection made) — reveal which option was
+                // correct, visually distinct from "you picked this and
+                // got it right".
+                buttonClass += ' correct-reveal'
               }
 
               return (

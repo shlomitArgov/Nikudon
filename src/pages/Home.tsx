@@ -1,11 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  stages,
-  getStageGraphemes,
-  isStageUnlocked,
-  type Stage,
-} from '../content/stages'
+import { stages, getStageGraphemes, isStageUnlocked, type Stage } from '../content/stages'
 import { isolatedNiqud } from '../content/nikudGroups'
 import { useAudioPlayer, unlockAudio } from '../hooks/useAudioPlayer'
 import { useStageProgress } from '../context/StageProgressContext'
@@ -65,7 +60,6 @@ function Home() {
             const allTapped = graphemes.every((g) =>
               tappedForLevel.has(g.audioId)
             )
-
             return (
               <div className="level-card" key={stage.id}>
                 <div className="level-badge" aria-label={`Level ${levelNumber}`}>
