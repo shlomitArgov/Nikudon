@@ -30,12 +30,8 @@ function StagePlayer() {
   const navigate = useNavigate()
   const { selectedLetter } = useSelectedLetter()
   // recordAnswer persists into the lifetime, cross-session unlock-gate stats
-  // (StageProgressContext/localStorage). The "X / Y" shown on this page is
-  // this-visit-only, so it's plain component state instead — it naturally
-  // resets to 0/0 on remount (i.e. whenever the stage is re-entered).
+  // (StageProgressContext/localStorage).
   const { recordAnswer } = useStageProgress()
-  const [sessionCorrect, setSessionCorrect] = useState(0)
-  const [sessionTotal, setSessionTotal] = useState(0)
   const { play, isReady } = useAudioPlayer()
   const [stage] = useState(getStage(stageId || '') || getFirstStage())
   const [trials, setTrials] = useState<Trial[]>([])
@@ -119,20 +115,9 @@ function StagePlayer() {
     setIsLocked(false)
   }
 
-  // Updates both the lifetime unlock-gate stats (persisted) and this visit's
-  // on-screen "X / Y" tally (plain state, resets on remount). A wrong tap
-  // records nothing at all — only successes and skips move the total, so
-  // the stat reads as "questions cleared", not a penalized attempt count.
-  const recordSuccess = () => {
-    recordAnswer(stage.id, true)
-    setSessionTotal((prev) => prev + 1)
-    setSessionCorrect((prev) => prev + 1)
-  }
-
-  const recordSkip = () => {
-    recordAnswer(stage.id, false)
-    setSessionTotal((prev) => prev + 1)
-  }
+  // Feeds the lifetime unlock-gate stats (persisted). The on-screen "X / Y"
+  // is derived straight from `answers` below instead — one slot per trial,
+  // so re-answering a trial overwrites its slot rather than counting again.
 
   const handleForward = () => {
     cancelAutoAdvance()
@@ -147,7 +132,7 @@ function StagePlayer() {
         next[skippedIndex] = { selectedGroupId: null, isCorrect: false }
         return next
       })
-      recordSkip()
+      recordAnswer(stage.id, false)
     }
 
     if (currentIndex < trials.length - 1) {
@@ -176,6 +161,10 @@ function StagePlayer() {
 
     const isCorrect = groupId === currentTrial.correctGroupId
     const answerIndex = currentIndex
+    // Was this trial already marked correct before this tap? Re-answering
+    // an already-correct trial (e.g. navigating back and tapping it again)
+    // must not count a second time toward the unlock gate or "X / Y".
+    const wasAlreadyCorrect = answers[answerIndex]?.isCorrect === true
 
     // Audio feedback: play the sound of the tapped letter+niqqud (keyed by the
     // selected letter and the option's sound-group, e.g. 'ב-a') so the child
@@ -189,10 +178,12 @@ function StagePlayer() {
     })
 
     if (isCorrect) {
-      // Counts toward this stage's unlock threshold and the "X / Y so far"
-      // display — every correct turn, even a re-answer of a revisited trial
-      // (kept simple, no dedup bookkeeping). A wrong tap records nothing.
-      recordSuccess()
+      // Counts toward this stage's unlock threshold — once per trial, not
+      // once per tap. A wrong tap records nothing (handled above by simply
+      // not calling recordAnswer here).
+      if (!wasAlreadyCorrect) {
+        recordAnswer(stage.id, true)
+      }
       // Lock + gray the screen immediately, hold the green feedback for a beat,
       // then slow-fade out and advance to the next trial (which fades back in).
       // The lock is released once the next page has settled (auto-play effect).
@@ -227,6 +218,16 @@ function StagePlayer() {
   }
 
   const currentAnswer = answers[currentIndex] ?? null
+  // "X / Y" for this visit, derived from the answer history rather than a
+  // separately-incremented counter: one slot per trial, so re-answering a
+  // trial overwrites its slot instead of counting again. A skip
+  // (selectedGroupId null) counts toward the total but not correct; a
+  // wrong-but-not-yet-resolved trial counts toward neither.
+  const answeredSoFar = answers.filter((a): a is TrialAnswer => a !== null)
+  const sessionCorrect = answeredSoFar.filter((a) => a.isCorrect).length
+  const sessionTotal = answeredSoFar.filter(
+    (a) => a.isCorrect || a.selectedGroupId === null
+  ).length
   // Minimal-text UI: show the stage as a numeric corner badge (e.g. "stage-1"
   // -> "1") instead of a Hebrew "שלב" label — pre-literate, icon/number only.
   const stageNumber = stage.id.replace(/\D/g, '') || stage.id
