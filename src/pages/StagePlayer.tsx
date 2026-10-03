@@ -29,7 +29,13 @@ function StagePlayer() {
   const { stageId } = useParams<{ stageId?: string }>()
   const navigate = useNavigate()
   const { selectedLetter } = useSelectedLetter()
-  const { correctCounts, totalCounts, recordAnswer } = useStageProgress()
+  // recordAnswer persists into the lifetime, cross-session unlock-gate stats
+  // (StageProgressContext/localStorage). The "X / Y" shown on this page is
+  // this-visit-only, so it's plain component state instead — it naturally
+  // resets to 0/0 on remount (i.e. whenever the stage is re-entered).
+  const { recordAnswer } = useStageProgress()
+  const [sessionCorrect, setSessionCorrect] = useState(0)
+  const [sessionTotal, setSessionTotal] = useState(0)
   const { play, isReady } = useAudioPlayer()
   const [stage] = useState(getStage(stageId || '') || getFirstStage())
   const [trials, setTrials] = useState<Trial[]>([])
@@ -113,6 +119,16 @@ function StagePlayer() {
     setIsLocked(false)
   }
 
+  // Updates both the lifetime unlock-gate stats (persisted) and this
+  // visit's on-screen "X / Y" tally (plain state, resets on remount).
+  const recordAttempt = (isCorrect: boolean) => {
+    recordAnswer(stage.id, isCorrect)
+    setSessionTotal((prev) => prev + 1)
+    if (isCorrect) {
+      setSessionCorrect((prev) => prev + 1)
+    }
+  }
+
   const handleForward = () => {
     cancelAutoAdvance()
 
@@ -126,7 +142,7 @@ function StagePlayer() {
         next[skippedIndex] = { selectedGroupId: null, isCorrect: false }
         return next
       })
-      recordAnswer(stage.id, false)
+      recordAttempt(false)
     }
 
     if (currentIndex < trials.length - 1) {
@@ -170,7 +186,7 @@ function StagePlayer() {
     // Counts toward this stage's unlock threshold and the "X / Y so far"
     // display — every answered turn, even a re-answer of a revisited trial
     // (kept simple, no dedup bookkeeping).
-    recordAnswer(stage.id, isCorrect)
+    recordAttempt(isCorrect)
 
     if (isCorrect) {
       // Lock + gray the screen immediately, hold the green feedback for a beat,
@@ -279,9 +295,9 @@ function StagePlayer() {
         <div className="position-indicator">
           <span
             className="stage-progress"
-            aria-label={`${correctCounts[stage.id] ?? 0} correct out of ${totalCounts[stage.id] ?? 0}`}
+            aria-label={`${sessionCorrect} correct out of ${sessionTotal}`}
           >
-            {correctCounts[stage.id] ?? 0} / {totalCounts[stage.id] ?? 0}
+            {sessionCorrect} / {sessionTotal}
           </span>
           {currentAnswer && currentAnswer.selectedGroupId !== null && (
             <span
